@@ -60,3 +60,10 @@ Wil je bij livegang niet de headlines van vandaag posten maar pas vanaf het eers
 - **Fout bij posten?** GitHub mailt je bij een mislukte run; de bot probeert het de volgende run gewoon opnieuw. Verlopen token → stap 2 opnieuw en `IG_ACCESS_TOKEN` vervangen.
 - **Opruimen**: visuals ouder dan 14 dagen worden automatisch uit de repo verwijderd (Instagram bewaart z'n eigen kopie).
 - **Fonts**: Oswald en Figtree (de fonts van de site, SIL Open Font License).
+
+## Alternatieve koppeling via Facebook (legacy)
+
+Werkt de pagina *API setup with Unified login* niet, dan kan de bot ook via de aan Instagram gekoppelde Facebook-pagina posten:
+1. Koppel Instagram aan de WBN Facebook-pagina (Accountcentrum).
+2. Haal een **page access token** op (Graph API Explorer → permissies `instagram_basic`, `instagram_content_publish`, `pages_show_list`, `pages_read_engagement`, `business_management` → long-lived token → page token). Een page token van een long-lived user token verloopt niet.
+3. Zet in GitHub: secret `IG_ACCESS_TOKEN` = page token, secret `IG_USER_ID` = Instagram business account-ID, en onder *Variables* `IG_API_ROUTE` = `facebook`. `GH_PAT` is dan niet nodig.

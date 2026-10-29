@@ -503,8 +503,15 @@ def build_caption(art: dict) -> str:
 
 
 # ----------------------------------------------------------------------------- 5. Instagram API
+def ig_route() -> str:
+    """'instagram' = Instagram API with Instagram login (default).
+    'facebook' = legacy route via the linked Facebook Page (page token never expires, IG_USER_ID required)."""
+    return (os.environ.get("IG_API_ROUTE") or "instagram").strip().lower()
+
+
 def ig_base():
-    return f"https://graph.instagram.com/{CFG['graph_api_version']}"
+    host = "graph.facebook.com" if ig_route() == "facebook" else "graph.instagram.com"
+    return f"https://{host}/{CFG['graph_api_version']}"
 
 
 def ig_token() -> str:
@@ -518,6 +525,8 @@ def ig_user_id(token: str) -> str:
     uid = os.environ.get("IG_USER_ID")
     if uid:
         return uid
+    if ig_route() == "facebook":
+        sys.exit("IG_USER_ID (Instagram business account id) is required for the Facebook route")
     r = requests.get(f"{ig_base()}/me", params={"fields": "user_id,username", "access_token": token}, timeout=30)
     r.raise_for_status()
     return r.json()["user_id"]
@@ -641,6 +650,12 @@ def cmd_seed():
 
 
 def cmd_refresh_token():
+    if ig_route() == "facebook":
+        log("Facebook route: page tokens don't expire, nothing to refresh.")
+        return
+    if not os.environ.get("IG_ACCESS_TOKEN"):
+        log("Instagram is not connected yet — nothing to refresh.")
+        return
     r = requests.get("https://graph.instagram.com/refresh_access_token",
                      params={"grant_type": "ig_refresh_token", "access_token": ig_token()}, timeout=30)
     if r.status_code >= 400:

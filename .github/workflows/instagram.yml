@@ -53,6 +53,7 @@ jobs:
         env:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_API_ROUTE: ${{ vars.IG_API_ROUTE }}
         run: python bot.py publish
 
       - name: Save posting log
