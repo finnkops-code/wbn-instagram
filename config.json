@@ -1,0 +1,264 @@
+{
+  "site_url": "https://worldbaseballnews.org/",
+  "timezone": "Europe/Amsterdam",
+  "max_posts_per_day": 3,
+  "min_minutes_between_posts": 45,
+  "max_article_age_hours": 20,
+  "title_max_chars": 70,
+  "graph_api_version": "v23.0",
+  "image_base_url": "https://raw.githubusercontent.com/finnkops-code/wbn-instagram/main/posts/",
+  "base_hashtags": [
+    "#baseball",
+    "#worldbaseballnews",
+    "#baseballnews"
+  ],
+  "league_hashtags": {
+    "mlb": [
+      "#MLB",
+      "#MLBNews"
+    ],
+    "npb": [
+      "#NPB",
+      "#JapaneseBaseball",
+      "#プロ野球"
+    ],
+    "kbo": [
+      "#KBO",
+      "#KoreanBaseball",
+      "#KBO리그"
+    ],
+    "cpbl": [
+      "#CPBL",
+      "#TaiwanBaseball",
+      "#中華職棒"
+    ],
+    "cpb": [
+      "#CPB",
+      "#ChinaBaseball"
+    ],
+    "lidom": [
+      "#LIDOM",
+      "#BeisbolDominicano",
+      "#Beisbol"
+    ],
+    "lmb": [
+      "#LMB",
+      "#BeisbolMexicano",
+      "#Beisbol"
+    ],
+    "lmp": [
+      "#LMP",
+      "#LigaMexicanaDelPacifico",
+      "#Beisbol"
+    ],
+    "lvbp": [
+      "#LVBP",
+      "#BeisbolVenezolano",
+      "#Beisbol"
+    ],
+    "lbprc": [
+      "#LBPRC",
+      "#BeisbolPR",
+      "#Beisbol"
+    ],
+    "abl": [
+      "#ABL",
+      "#AustralianBaseball"
+    ],
+    "hoofdklasse": [
+      "#Hoofdklasse",
+      "#Honkbal",
+      "#DutchBaseball"
+    ],
+    "dbl": [
+      "#DBL",
+      "#Baseball1BL",
+      "#GermanBaseball"
+    ],
+    "serie-a": [
+      "#SerieABaseball",
+      "#ItalianBaseball"
+    ],
+    "extraliga": [
+      "#Extraliga",
+      "#CzechBaseball"
+    ],
+    "czech-extraliga": [
+      "#Extraliga",
+      "#CzechBaseball"
+    ],
+    "french-d1": [
+      "#FrenchBaseball",
+      "#D1Baseball"
+    ],
+    "international": [
+      "#WBSC",
+      "#InternationalBaseball"
+    ],
+    "milb": [
+      "#MiLB",
+      "#MinorLeagueBaseball"
+    ]
+  },
+  "league_labels": {
+    "mlb": "MLB",
+    "npb": "NPB",
+    "kbo": "KBO",
+    "cpbl": "CPBL",
+    "cpb": "CPB",
+    "lidom": "LIDOM",
+    "lmb": "LMB",
+    "lmp": "LMP",
+    "lvbp": "LVBP",
+    "lbprc": "LBPRC",
+    "abl": "ABL",
+    "hoofdklasse": "HOOFDKLASSE",
+    "dbl": "DBL",
+    "serie-a": "SERIE A",
+    "extraliga": "EXTRALIGA",
+    "czech-extraliga": "EXTRALIGA",
+    "french-d1": "FRENCH D1",
+    "international": "INTERNATIONAL"
+  },
+  "must_post_score": 60,
+  "min_post_score": 40,
+  "best_of_from": "18:30",
+  "best_of_until": "23:30",
+  "scoring": {
+    "league_tiers": {
+      "top": [
+        "mlb"
+      ],
+      "major": [
+        "npb",
+        "kbo",
+        "international",
+        "wbc"
+      ],
+      "winter": [
+        "lidom",
+        "lmp",
+        "lvbp",
+        "lbprc",
+        "cpbl",
+        "lmb",
+        "abl",
+        "cpb"
+      ],
+      "europe": [
+        "hoofdklasse",
+        "dbl",
+        "serie-a",
+        "extraliga",
+        "czech-extraliga",
+        "french-d1",
+        "division-de-honor",
+        "belgian-d1",
+        "austrian-bundesliga",
+        "swiss-nla",
+        "elitserien",
+        "nbl",
+        "european-championship",
+        "champions-league"
+      ],
+      "minor": [
+        "milb",
+        "afl",
+        "international-league",
+        "pcl",
+        "eastern-league",
+        "southern-league",
+        "texas-league",
+        "atlantic-league",
+        "american-association",
+        "frontier-league",
+        "cbl",
+        "apbn"
+      ]
+    },
+    "tier_points": {
+      "top": 30,
+      "major": 22,
+      "winter": 14,
+      "europe": 16,
+      "minor": 6,
+      "other": 10
+    },
+    "topics": {
+      "title won": {
+        "points": 45,
+        "pattern": "\\b(champions?|championship|crowned|title|gold medal)\\b|\\b(wins?|won|sweeps?|swept|clinch\\w*)\\b.*\\b(series|title|crown|classic|pennant)\\b"
+      },
+      "final series": {
+        "points": 32,
+        "pattern": "\\b(world series|japan series|korean series|taiwan series|caribbean series|serie del caribe|holland series|world baseball classic|european championship)\\b"
+      },
+      "major award": {
+        "points": 38,
+        "pattern": "\\b(mvp|cy young|sawamura|rookie of the year|hall of fame|gold glove|silver slugger|manager of the year)\\b"
+      },
+      "historic feat": {
+        "points": 35,
+        "pattern": "\\b(no-hitter|perfect game|record|first[- ]ever|historic|history|cycle|four homers|milestone|\\d{3}(th)? (career )?(homer|home run|win|strikeout)s?)\\b"
+      },
+      "big move": {
+        "points": 28,
+        "pattern": "\\b(signs?|signed|signing|trade[ds]?|acquires?|free agent|free agency|posting|posted|contract|extension|retires?|retirement|fired|hired as manager|new manager)\\b"
+      },
+      "playoffs": {
+        "points": 24,
+        "pattern": "\\b(playoffs?|postseason|game [1-7]|series lead|clinch\\w*|eliminat\\w*|decider|semi-?finals?|finals?|final four|pennant|wild card|force[sd]? game)\\b"
+      },
+      "star performance": {
+        "points": 12,
+        "pattern": "\\b(walk[- ]?off|grand slam|shutout|one-hitter|one-hit|strikes out \\d+|\\d+ strikeouts|two homers|three homers)\\b"
+      },
+      "game recap": {
+        "points": 6,
+        "pattern": "\\b(beat|beats|tops|edges|routs|lifts|past|over|win|wins|downs)\\b"
+      }
+    },
+    "penalties": {
+      "youth/juniors": {
+        "points": -18,
+        "pattern": "\\b(u-?1[0-9]|u-?2[0-3]|youth|junior|juniors|little league)\\b"
+      },
+      "admin/organisational": {
+        "points": -12,
+        "pattern": "\\b(coach(es|ing)? staff|coaching|commissioner|board|eligible|roster|schedule|delays?|postponed|rain|prospect pipeline|affiliat\\w*)\\b"
+      },
+      "preview": {
+        "points": -6,
+        "pattern": "\\b(preview|what to watch|set for|ahead of)\\b"
+      }
+    },
+    "most_read_bonus": 10,
+    "decay_per_hour": 0.6,
+    "same_story_min_shared_words": 3,
+    "same_story_penalty": -35,
+    "same_league_penalty": -12,
+    "extra_topic_points": 5,
+    "generic_words": [
+      "world",
+      "series",
+      "game",
+      "games",
+      "playoff",
+      "playoffs",
+      "final",
+      "finals",
+      "league",
+      "baseball",
+      "mvp",
+      "title",
+      "champion",
+      "champions",
+      "first",
+      "season",
+      "2-1",
+      "3-1"
+    ]
+  },
+  "reserve_last_slot_until": "15:00",
+  "breaking_score": 80
+}

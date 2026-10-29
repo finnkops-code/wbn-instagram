@@ -1,0 +1,59 @@
+name: Instagram autopost
+
+on:
+  schedule:
+    - cron: "*/20 * * * *"   # every 20 minutes; the bot itself enforces max 3 posts/day
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Only create the visual + caption, don't post"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: instagram-autopost
+  cancel-in-progress: false
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Pick headline, render visual + caption
+        id: prep
+        run: python bot.py prepare
+
+      - name: Upload visual (Instagram fetches it from the public raw URL)
+        if: steps.prep.outputs.has_post == 'true'
+        run: |
+          git config user.name  "wbn-instagram-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add posts/
+          git diff --cached --quiet || (git commit -m "Visual: $(jq -r .headline pending.json)" && git push)
+          echo "### Caption" >> $GITHUB_STEP_SUMMARY
+          jq -r .caption pending.json >> $GITHUB_STEP_SUMMARY
+
+      - name: Publish to Instagram
+        if: steps.prep.outputs.has_post == 'true' && inputs.dry_run != true
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+        run: python bot.py publish
+
+      - name: Save posting log
+        if: steps.prep.outputs.has_post == 'true' && inputs.dry_run != true
+        run: |
+          git add -A state/ posts/
+          git diff --cached --quiet || (git commit -m "Posted to Instagram" && git push)
