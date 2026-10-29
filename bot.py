@@ -562,6 +562,10 @@ def ig_publish(image_url: str, caption: str) -> str:
 
 # ----------------------------------------------------------------------------- commands
 def cmd_prepare():
+    if not os.environ.get("IG_ACCESS_TOKEN") and os.environ.get("DRY_RUN") != "true":
+        log("Instagram is not connected yet (secret IG_ACCESS_TOKEN missing) — skipping this run.")
+        gh_output("has_post", "false")
+        return
     state = load_state()
     ok, why = can_post_now(state)
     log(f"Status: {why}")

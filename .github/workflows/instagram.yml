@@ -33,6 +33,9 @@ jobs:
 
       - name: Pick headline, render visual + caption
         id: prep
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run == true }}
         run: python bot.py prepare
 
       - name: Upload visual (Instagram fetches it from the public raw URL)
