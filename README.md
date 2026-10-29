@@ -4,21 +4,22 @@ Post automatisch de grootste headlines van worldbaseballnews.org op Instagram: e
 
 ## Hoe het werkt
 
-Elke 20 minuten leest de bot de RSS-feed van de site (alle artikelen van de afgelopen 20 uur, niet alleen de hero) en geeft elk artikel een **nieuwswaarde-score van 0–100**:
+Elke 3 uur (01, 04, 07, 10, 13, 16, 19 en 22 uur NL-tijd) leest de bot de RSS-feed van de site (alle artikelen van de afgelopen 20 uur, niet alleen de hero) en geeft elk artikel een **nieuwswaarde-score van 0–100**:
 
 | Onderdeel | Punten |
 |---|---|
-| League | MLB +30 · NPB/KBO/internationaal +22 · Europa +16 · winterleagues/CPBL +14 · minors +6 |
+| League | elke league start gelijk: +20 |
 | Onderwerp (sterkste telt, elk extra onderwerp +5) | titel gewonnen +45 · grote prijs (MVP, Cy Young, Sawamura) +38 · historisch (no-hitter, record) +35 · transfer/contract/ontslag +28 · finale-serie +32 · playoffs +24 · topprestatie (walk-off, grand slam, shutout) +12 · gewone wedstrijd +6 |
 | Aftrek | jeugd/U-18 −18 · bestuurlijk/staf/schema/regen −12 · preview −6 · ouderdom −0,6 per uur |
 | Lezers | staat in "Most read" op de homepage +10 |
-| Variatie | zelfde verhaal als eerdere post vandaag −35 · elke eerdere post uit dezelfde league vandaag −12 |
+| Variatie | zelfde verhaal als eerdere post vandaag −35 · elke eerdere post uit dezelfde league vandaag −12 · elke post uit die league eerder deze week −3 (zo komen leagues om de beurt) |
+| Toeval | +0 tot 8 willekeurig, vast per artikel per dag, zodat gelijkwaardige artikelen eerlijk om de beurt winnen |
 
 **Wanneer gaat er iets live?**
-- **Score ≥ 60**: direct na publicatie (topnieuws).
+- **Score ≥ 60**: bij de eerstvolgende run (topnieuws).
 - **Score 40–59**: wacht tot het avondvenster (18:30–23:30 NL), en daar gaat het beste resterende artikel uit als er nog ruimte is.
 - **Onder 40**: wordt niet gepost.
-- Max 3 posts per dag, minstens 45 minuten ertussen. De **derde post blijft tot 15:00 vrij**, behalve voor breaking news (≥ 80), zodat er altijd ruimte is voor groot nieuws later op de dag.
+- Max 3 posts per dag, max 1 per run. De **derde post blijft tot 15:00 vrij**, behalve voor breaking news (≥ 80), zodat er altijd ruimte is voor groot nieuws later op de dag.
 
 Elke run zet de volledige ranking met uitleg in de samenvatting van de GitHub Action, zodat je precies ziet waarom iets wel of niet gekozen is. Lokaal: `python bot.py rank`. Alle punten, woorden en tijden staan in `config.json` en zijn aan te passen.
 
@@ -55,7 +56,7 @@ Wil je bij livegang niet de headlines van vandaag posten maar pas vanaf het eers
 ## Handig om te weten
 
 - **Lokaal previewen**: `pip install -r requirements.txt` en dan `python bot.py preview` (huidige headlines) of `python bot.py preview <artikel-url>`. Visuals + captions komen in `preview/`.
-- **Timing**: GitHub draait geplande workflows soms 5–15 minuten later dan gepland. Een post komt dus meestal binnen een halfuur na publicatie online.
+- **Timing**: GitHub draait geplande workflows soms 5–15 minuten later dan gepland. Topnieuws komt dus binnen ruim 3 uur na publicatie online.
 - **Fout bij posten?** GitHub mailt je bij een mislukte run; de bot probeert het de volgende run gewoon opnieuw. Verlopen token → stap 2 opnieuw en `IG_ACCESS_TOKEN` vervangen.
 - **Opruimen**: visuals ouder dan 14 dagen worden automatisch uit de repo verwijderd (Instagram bewaart z'n eigen kopie).
 - **Fonts**: Oswald en Figtree (de fonts van de site, SIL Open Font License).

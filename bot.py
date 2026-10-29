@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import os
+import random
 import re
 import sys
 import time
@@ -154,12 +155,11 @@ def same_story(a: str, b: str) -> bool:
     return overlap >= SC["same_story_min_shared_words"] or overlap / min(len(wa), len(wb)) >= 0.5
 
 
-def score(c: dict, posted_today: list[dict], popular: set[str]) -> tuple[int, list[str]]:
+def score(c: dict, posted_today: list[dict], popular: set[str], recent: list[dict] = ()) -> tuple[int, list[str]]:
     """Newsworthiness 0-100. Returns the score plus the reasons, so every choice is explainable."""
     text = f"{c['home_title']} {c.get('feed_description', '')}"
     lg = league_slug(c["url"])
-    tier = next((t for t, lgs in SC["league_tiers"].items() if lg in lgs), "other")
-    pts, why = SC["tier_points"][tier], [f"{lg.upper()} ({tier}) +{SC['tier_points'][tier]}"]
+    pts, why = SC["base_points"], [f"{lg.upper()} base +{SC['base_points']}"]  # every league starts equal
 
     hits = sorted(((rule["points"], name) for name, rule in SC["topics"].items()
                    if re.search(rule["pattern"], c["home_title"], re.I)), reverse=True)
@@ -189,7 +189,15 @@ def score(c: dict, posted_today: list[dict], popular: set[str]) -> tuple[int, li
     if same_lg:
         pts += SC["same_league_penalty"] * same_lg
         why.append(f"{same_lg}x {lg.upper()} already today {SC['same_league_penalty'] * same_lg}")
-    return max(0, min(100, pts)), why
+    earlier = sum(1 for p in recent if league_slug(p["url"]) == lg)  # rotation: leagues take turns over the week
+    if earlier:
+        pts += SC["rotation_penalty"] * earlier
+        why.append(f"{earlier}x {lg.upper()} earlier this week {SC['rotation_penalty'] * earlier}")
+    # random tie-breaker, stable per article per day so runs don't flip-flop
+    rnd = random.Random(f"{c['url']}|{datetime.now(TZ).date()}").uniform(0, SC["random_jitter"])
+    pts += rnd
+    why.append(f"random +{rnd:.0f}")
+    return max(0, min(100, round(pts))), why
 
 
 def posted_today(state: dict) -> list[dict]:
@@ -201,6 +209,9 @@ def posted_today(state: dict) -> list[dict]:
 def ranked(state: dict) -> list[dict]:
     done = {p["url"] for p in state["posted"]}
     today, popular = posted_today(state), most_read_urls()
+    now = datetime.now(TZ)
+    recent = [p for p in state["posted"] if p.get("posted_at") and not p.get("seeded") and p not in today
+              and now - datetime.fromisoformat(p["posted_at"]) <= timedelta(days=SC["rotation_days"])]
     max_age = timedelta(hours=CFG["max_article_age_hours"])
     out = []
     for c in feed_candidates():
@@ -208,7 +219,7 @@ def ranked(state: dict) -> list[dict]:
             continue
         if datetime.now(timezone.utc) - c["pub_dt"] > max_age:
             continue
-        c["score"], c["why"] = score(c, today, popular)
+        c["score"], c["why"] = score(c, today, popular, recent)
         out.append(c)
     return sorted(out, key=lambda c: c["score"], reverse=True)
 

@@ -2,7 +2,7 @@ name: Instagram autopost
 
 on:
   schedule:
-    - cron: "*/20 * * * *"   # every 20 minutes; the bot itself enforces max 3 posts/day
+    - cron: "7 */3 * * *"   # every 3 hours (01/04/07/10/13/16/19/22 NL winter time); max 3 posts/day
   workflow_dispatch:
     inputs:
       dry_run:
