@@ -690,6 +690,24 @@ def cmd_refresh_token():
     log(f"Token refreshed, valid for {d.get('expires_in', 0) // 86400} more days.")
 
 
+def cmd_facebook_only(url: str):
+    """Post an article that is already on Instagram to the Facebook Page too (re-uses its visual)."""
+    url = norm_url(url)
+    state = load_state()
+    entry = next((e for e in state["posted"] if e["url"] == url), None)
+    if not entry or not entry.get("image"):
+        sys.exit(f"{url} is not in the posting log (or has no visual)")
+    if entry.get("facebook_post_id"):
+        log(f"Already on Facebook: {entry['facebook_post_id']}")
+        return
+    art = {"url": url, **article_meta(url)}
+    fid = fb_publish(CFG["image_base_url"] + Path(entry["image"]).name, build_caption(art, "facebook"))
+    if not fid:
+        sys.exit("Facebook post failed")
+    entry["facebook_post_id"] = fid
+    save_state(state)
+
+
 def cmd_check():
     """Read-only connection check: which page/account the token belongs to and which permissions it has."""
     token = ig_token()
@@ -718,4 +736,5 @@ if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "preview"
     {"prepare": cmd_prepare, "publish": cmd_publish, "seed": cmd_seed, "refresh-token": cmd_refresh_token,
      "rank": cmd_rank, "check": cmd_check,
+     "facebook-only": lambda: cmd_facebook_only(sys.argv[2]),
      "preview": lambda: cmd_preview(sys.argv[2:])}.get(cmd, lambda: sys.exit(__doc__))()

@@ -1,0 +1,34 @@
+name: Post existing article to Facebook
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Article URL that is already on Instagram"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Post to Facebook Page
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_API_ROUTE: ${{ vars.IG_API_ROUTE }}
+          ARTICLE_URL: ${{ inputs.url }}
+        run: python bot.py facebook-only "$ARTICLE_URL"
+      - name: Save posting log
+        run: |
+          git config user.name  "wbn-instagram-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add state/
+          git diff --cached --quiet || (git commit -m "Posted to Facebook" && git push)
