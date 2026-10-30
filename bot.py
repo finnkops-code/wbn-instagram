@@ -690,6 +690,25 @@ def cmd_refresh_token():
     log(f"Token refreshed, valid for {d.get('expires_in', 0) // 86400} more days.")
 
 
+def cmd_check():
+    """Read-only connection check: which page/account the token belongs to and which permissions it has."""
+    token = ig_token()
+    me = requests.get(f"{ig_base()}/me", params={"fields": "id,name", "access_token": token}, timeout=30).json()
+    log(f"Token belongs to: {me.get('name')} ({me.get('id')})  route={ig_route()}")
+    if ig_route() == "facebook":
+        ig = requests.get(f"{ig_base()}/{ig_user_id(token)}", params={"fields": "username", "access_token": token},
+                          timeout=30).json()
+        log(f"Instagram account: @{ig.get('username')}")
+        dbg = requests.get(f"{ig_base()}/debug_token", params={"input_token": token, "access_token": token},
+                           timeout=30).json().get("data", {})
+        scopes = dbg.get("scopes", [])
+        exp = dbg.get("expires_at")
+        log(f"Expires: {'never' if not exp else datetime.fromtimestamp(exp, TZ)}")
+        log(f"Permissions: {', '.join(scopes)}")
+        for need in ("instagram_content_publish", "pages_manage_posts"):
+            log(f"  {need}: {'OK' if need in scopes else 'MISSING'}")
+
+
 def cmd_rank():
     for c in ranked(load_state()):
         print(f"{c['score']:>3}  {c['home_title'][:72]:72}  {'; '.join(c['why'])}")
@@ -698,5 +717,5 @@ def cmd_rank():
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "preview"
     {"prepare": cmd_prepare, "publish": cmd_publish, "seed": cmd_seed, "refresh-token": cmd_refresh_token,
-     "rank": cmd_rank,
+     "rank": cmd_rank, "check": cmd_check,
      "preview": lambda: cmd_preview(sys.argv[2:])}.get(cmd, lambda: sys.exit(__doc__))()
