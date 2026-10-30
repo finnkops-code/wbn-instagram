@@ -485,7 +485,7 @@ EMOJI_RULES = [
 ]
 
 
-def build_caption(art: dict) -> str:
+def build_caption(art: dict, platform: str = "instagram") -> str:
     headline = (art.get("headline") or art.get("og_title") or "").strip()
     emoji = next((e for rx, e in EMOJI_RULES if re.search(rx, headline, re.I)), "⚾")
     desc = art.get("description", "").strip()
@@ -495,7 +495,8 @@ def build_caption(art: dict) -> str:
     parts = [
         f"{emoji} {headline}",
         desc,
-        "👉 Read the full story via the link in our bio.",
+        f"👉 Read the full story: {art['url']}" if platform == "facebook"
+        else "👉 Read the full story via the link in our bio.",
         "Follow for daily news, scores and standings from 39 baseball leagues around the world 🌍⚾",
         " ".join(tags[:15]),
     ]
@@ -593,10 +594,32 @@ def cmd_prepare():
     pending = {
         "url": art["url"], "slot": art["slot"], "title_on_image": title, "headline": art["headline"],
         "image_file": str(img.relative_to(ROOT)), "image_url": CFG["image_base_url"] + img.name, "caption": caption,
+        "caption_facebook": build_caption(art, "facebook"),
     }
     PENDING_FILE.write_text(json.dumps(pending, indent=2, ensure_ascii=False), encoding="utf-8")
     log(f"Prepared: [{art['slot']}] {art['headline']}\n  -> {img}")
     gh_output("has_post", "true")
+
+
+def fb_publish(image_url: str, caption: str) -> str | None:
+    """Photo post on the linked Facebook Page (same visual, caption with clickable article link).
+    Needs the Facebook route (page token) with the pages_manage_posts permission."""
+    if ig_route() != "facebook" or not CFG.get("post_to_facebook", True):
+        return None
+    token = ig_token()
+    try:
+        page = requests.get(f"{ig_base()}/me", params={"fields": "id", "access_token": token}, timeout=30).json()
+        r = requests.post(f"{ig_base()}/{page['id']}/photos",
+                          data={"url": image_url, "caption": caption, "access_token": token}, timeout=60)
+        if r.status_code >= 400:
+            log(f"  Facebook post failed (Instagram post is fine): {r.status_code} {r.text[:300]}")
+            return None
+        fid = r.json().get("post_id") or r.json().get("id")
+        log(f"  Facebook post {fid}")
+        return fid
+    except Exception as e:  # never let Facebook break the Instagram flow
+        log(f"  Facebook post failed (Instagram post is fine): {e}")
+        return None
 
 
 def cmd_publish():
@@ -605,10 +628,12 @@ def cmd_publish():
         return
     p = json.loads(PENDING_FILE.read_text(encoding="utf-8"))
     media_id = ig_publish(p["image_url"], p["caption"])
+    fb_id = fb_publish(p["image_url"], p.get("caption_facebook") or p["caption"])
     state = load_state()
     state["posted"].append({
         "url": p["url"], "headline": p["headline"], "slot": p["slot"], "image": p["image_file"],
-        "media_id": media_id, "posted_at": datetime.now(TZ).isoformat(timespec="seconds"),
+        "media_id": media_id, "facebook_post_id": fb_id,
+        "posted_at": datetime.now(TZ).isoformat(timespec="seconds"),
     })
     save_state(state)
     PENDING_FILE.unlink()

@@ -66,4 +66,5 @@ Wil je bij livegang niet de headlines van vandaag posten maar pas vanaf het eers
 Werkt de pagina *API setup with Unified login* niet, dan kan de bot ook via de aan Instagram gekoppelde Facebook-pagina posten:
 1. Koppel Instagram aan de WBN Facebook-pagina (Accountcentrum).
 2. Haal een **page access token** op (Graph API Explorer → permissies `instagram_basic`, `instagram_content_publish`, `pages_show_list`, `pages_read_engagement`, `business_management` → long-lived token → page token). Een page token van een long-lived user token verloopt niet.
-3. Zet in GitHub: secret `IG_ACCESS_TOKEN` = page token, secret `IG_USER_ID` = Instagram business account-ID, en onder *Variables* `IG_API_ROUTE` = `facebook`. `GH_PAT` is dan niet nodig.
+3. Voeg in de Graph API Explorer ook `pages_manage_posts` toe als je dezelfde post op Facebook wilt (foto + caption met klikbare artikellink). Zonder die permissie post de bot alleen op Instagram.
+4. Zet in GitHub: secret `IG_ACCESS_TOKEN` = page token, secret `IG_USER_ID` = Instagram business account-ID, en onder *Variables* `IG_API_ROUTE` = `facebook`. `GH_PAT` is dan niet nodig.

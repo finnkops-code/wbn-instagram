@@ -205,5 +205,6 @@
     "rotation_penalty": -3
   },
   "reserve_last_slot_until": "15:00",
-  "breaking_score": 80
+  "breaking_score": 80,
+  "post_to_facebook": true
 }
