@@ -742,6 +742,8 @@ def cmd_check():
     """Read-only connection check: which page/account the token belongs to and which permissions it has."""
     token = ig_token()
     me = requests.get(f"{ig_base()}/me", params={"fields": "id,name", "access_token": token}, timeout=30).json()
+    if "error" in me:
+        print(f"::error title=Token check::{json.dumps(me['error'])[:900]}", flush=True)
     log(f"Token belongs to: {me.get('name')} ({me.get('id')})  route={ig_route()}")
     if ig_route() == "facebook":
         ig = requests.get(f"{ig_base()}/{ig_user_id(token)}", params={"fields": "username", "access_token": token},
@@ -750,6 +752,8 @@ def cmd_check():
         dbg = requests.get(f"{ig_base()}/debug_token", params={"input_token": token, "access_token": token},
                            timeout=30).json().get("data", {})
         scopes = dbg.get("scopes", [])
+        print(f"::notice title=Token debug::valid={dbg.get('is_valid')} type={dbg.get('type')} "
+              f"error={json.dumps(dbg.get('error'))[:400]} scopes={','.join(scopes)}", flush=True)
         exp = dbg.get("expires_at")
         log(f"Expires: {'never' if not exp else datetime.fromtimestamp(exp, TZ)}")
         log(f"Permissions: {', '.join(scopes)}")
