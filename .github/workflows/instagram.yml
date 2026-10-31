@@ -9,6 +9,10 @@ on:
         description: "Only create the visual + caption, don't post"
         type: boolean
         default: false
+      force:
+        description: "Post the best available story now, ignoring score thresholds and time windows (daily max still applies)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -36,6 +40,7 @@ jobs:
         env:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           DRY_RUN: ${{ inputs.dry_run == true }}
+          FORCE_POST: ${{ inputs.force == true }}
         run: python bot.py prepare
 
       - name: Upload visual (Instagram fetches it from the public raw URL)

@@ -287,11 +287,16 @@ def pick_next(state: dict) -> dict | None:
     top = ranking[0]
     now_hm = datetime.now(TZ).strftime("%H:%M")
     last_slot = len(posted_today(state)) == CFG["max_posts_per_day"] - 1
-    if last_slot and now_hm < CFG["reserve_last_slot_until"] and top["score"] < CFG["breaking_score"]:
+    force = os.environ.get("FORCE_POST") == "true"
+    if force:
+        log(f"Manual run with force: posting best available story (score {top['score']})")
+    elif last_slot and now_hm < CFG["reserve_last_slot_until"] and top["score"] < CFG["breaking_score"]:
         log(f"Last slot of the day is kept free until {CFG['reserve_last_slot_until']} "
             f"(only breaking news >= {CFG['breaking_score']} may use it; best now {top['score']}).")
         return None
-    if top["score"] >= CFG["must_post_score"]:
+    if force:
+        pass
+    elif top["score"] >= CFG["must_post_score"]:
         log(f"Must-post (score {top['score']} >= {CFG['must_post_score']})")
     elif in_best_of_window() and top["score"] >= CFG["min_post_score"]:
         log(f"Best-of window: posting best remaining story (score {top['score']})")
