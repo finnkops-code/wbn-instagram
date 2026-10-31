@@ -624,6 +624,21 @@ def cmd_prepare():
     gh_output("has_post", "true")
 
 
+def fb_page(token: str) -> tuple[str, str]:
+    """Return (page_id, page_token). Works with a page token (returns itself) and with a
+    system-user/user token (looks up the Page linked to IG_USER_ID and its page token)."""
+    r = requests.get(f"{ig_base()}/me/accounts",
+                     params={"fields": "id,name,access_token,instagram_business_account", "access_token": token},
+                     timeout=30).json()
+    pages = r.get("data") or []
+    if pages:
+        want = os.environ.get("IG_USER_ID", "")
+        page = next((p for p in pages if (p.get("instagram_business_account") or {}).get("id") == want), pages[0])
+        return page["id"], page["access_token"]
+    me = requests.get(f"{ig_base()}/me", params={"fields": "id", "access_token": token}, timeout=30).json()
+    return me["id"], token
+
+
 def fb_publish(image_url: str, caption: str) -> str | None:
     """Photo post on the linked Facebook Page (same visual, caption with clickable article link).
     Needs the Facebook route (page token) with the pages_manage_posts permission."""
@@ -631,9 +646,9 @@ def fb_publish(image_url: str, caption: str) -> str | None:
         return None
     token = ig_token()
     try:
-        page = requests.get(f"{ig_base()}/me", params={"fields": "id", "access_token": token}, timeout=30).json()
-        r = requests.post(f"{ig_base()}/{page['id']}/photos",
-                          data={"url": image_url, "caption": caption, "access_token": token}, timeout=60)
+        page_id, page_token = fb_page(token)
+        r = requests.post(f"{ig_base()}/{page_id}/photos",
+                          data={"url": image_url, "caption": caption, "access_token": page_token}, timeout=60)
         if r.status_code >= 400:
             log(f"  Facebook post failed (Instagram post is fine): {r.status_code} {r.text[:300]}")
             return None
@@ -757,6 +772,11 @@ def cmd_check():
         exp = dbg.get("expires_at")
         log(f"Expires: {'never' if not exp else datetime.fromtimestamp(exp, TZ)}")
         log(f"Permissions: {', '.join(scopes)}")
+        try:
+            pid, _ = fb_page(token)
+            log(f"Facebook Page used for posts: {pid}")
+        except Exception as e:
+            print(f"::error title=Page lookup::{e}", flush=True)
         for need in ("instagram_content_publish", "pages_manage_posts"):
             log(f"  {need}: {'OK' if need in scopes else 'MISSING'}")
 
