@@ -2,7 +2,9 @@ name: Instagram autopost
 
 on:
   schedule:
-    - cron: "7 */3 * * *"   # every 3 hours (01/04/07/10/13/16/19/22 NL winter time); max 3 posts/day
+    # Hourly checks: GitHub often delays or drops scheduled runs, so more checks = fewer missed posts.
+    # The bot itself still enforces max 3 posts/day, 60+ min between posts and the score/time rules.
+    - cron: "23 * * * *"
   workflow_dispatch:
     inputs:
       dry_run:
