@@ -17,6 +17,19 @@
       "media_id": "18017543627960386",
       "facebook_post_id": "924847174034802_122148606969132879",
       "posted_at": "2026-10-31T09:59:15+01:00"
+    },
+    {
+      "url": "https://worldbaseballnews.org/news/international/katana-baseball-week-2026-osaka-bbjo-globetrotters/",
+      "headline": "Katana Japan Wins Katana Baseball Week Series Over BBJO Globetrotters",
+      "slot": "manual",
+      "image": "posts/katana-baseball-week-2026-osaka-bbjo-globetrotters.jpg",
+      "media_id": "18128541524299505",
+      "facebook_post_id": "924847174034802_122148666099132879",
+      "collaborators": [
+        "katana.jp.official",
+        "baseballjobsoverseas"
+      ],
+      "posted_at": "2026-10-31T19:01:59+01:00"
     }
   ]
 }
