@@ -546,28 +546,46 @@ def wait_public(url: str, timeout=180):
     raise RuntimeError(f"image not publicly reachable: {url}")
 
 
+def pinned_image_url(url: str) -> str:
+    """Use the commit-pinned raw URL (immutable, no branch cache) when the workflow tells us the commit."""
+    sha = os.environ.get("IMAGE_SHA", "").strip()
+    return url.replace("/main/", f"/{sha}/", 1) if sha else url
+
+
 def ig_publish(image_url: str, caption: str) -> str:
     token = ig_token()
     uid = ig_user_id(token)
-    wait_public(image_url)
-    r = requests.post(f"{ig_base()}/{uid}/media",
-                      data={"image_url": image_url, "caption": caption, "access_token": token}, timeout=60)
-    if r.status_code >= 400:
-        raise RuntimeError(f"create container failed: {r.status_code} {r.text}")
-    cid = r.json()["id"]
-    for _ in range(10):  # up to ~5 minutes
-        s = requests.get(f"{ig_base()}/{cid}", params={"fields": "status_code", "access_token": token}, timeout=30).json()
-        status = s.get("status_code")
-        log(f"  container {cid}: {status}")
+    wait_public(image_url, timeout=300)
+    last_err = ""
+    for attempt in range(1, 4):  # Meta sometimes can't fetch a just-uploaded image yet: retry
+        r = requests.post(f"{ig_base()}/{uid}/media",
+                          data={"image_url": image_url, "caption": caption, "access_token": token}, timeout=60)
+        if r.status_code >= 400:
+            last_err = f"create container failed: {r.status_code} {r.text[:400]}"
+            log(f"  attempt {attempt}: {last_err}")
+            time.sleep(60)
+            continue
+        cid = r.json()["id"]
+        status = None
+        for _ in range(10):  # up to ~5 minutes
+            s = requests.get(f"{ig_base()}/{cid}", params={"fields": "status_code,status", "access_token": token},
+                             timeout=30).json()
+            status = s.get("status_code")
+            log(f"  container {cid}: {status} {s.get('status', '')}")
+            if status in ("FINISHED", "ERROR", "EXPIRED"):
+                break
+            time.sleep(30)
         if status == "FINISHED":
-            break
-        if status in ("ERROR", "EXPIRED"):
-            raise RuntimeError(f"container {status}: {s}")
-        time.sleep(30)
-    r = requests.post(f"{ig_base()}/{uid}/media_publish", data={"creation_id": cid, "access_token": token}, timeout=60)
-    if r.status_code >= 400:
-        raise RuntimeError(f"publish failed: {r.status_code} {r.text}")
-    return r.json()["id"]
+            r = requests.post(f"{ig_base()}/{uid}/media_publish",
+                              data={"creation_id": cid, "access_token": token}, timeout=60)
+            if r.status_code < 400:
+                return r.json()["id"]
+            last_err = f"publish failed: {r.status_code} {r.text[:400]}"
+        else:
+            last_err = f"container {status}: {s}"
+        log(f"  attempt {attempt}: {last_err}")
+        time.sleep(60)
+    raise RuntimeError(last_err)
 
 
 # ----------------------------------------------------------------------------- commands
@@ -627,8 +645,15 @@ def cmd_publish():
         log("Nothing pending.")
         return
     p = json.loads(PENDING_FILE.read_text(encoding="utf-8"))
-    media_id = ig_publish(p["image_url"], p["caption"])
-    fb_id = fb_publish(p["image_url"], p.get("caption_facebook") or p["caption"])
+    image_url = pinned_image_url(p["image_url"])
+    log(f"Image: {image_url}")
+    try:
+        media_id = ig_publish(image_url, p["caption"])
+    except Exception as e:
+        # GitHub annotation: shows up in the run overview (and the public checks API) without opening logs
+        print(f"::error title=Instagram publish failed::{str(e)[:900]}", flush=True)
+        raise
+    fb_id = fb_publish(image_url, p.get("caption_facebook") or p["caption"])
     state = load_state()
     state["posted"].append({
         "url": p["url"], "headline": p["headline"], "slot": p["slot"], "image": p["image_file"],

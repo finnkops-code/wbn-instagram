@@ -20,7 +20,7 @@ concurrency:
 jobs:
   post:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -39,12 +39,14 @@ jobs:
         run: python bot.py prepare
 
       - name: Upload visual (Instagram fetches it from the public raw URL)
+        id: upload
         if: steps.prep.outputs.has_post == 'true'
         run: |
           git config user.name  "wbn-instagram-bot"
           git config user.email "actions@users.noreply.github.com"
           git add posts/
-          git diff --cached --quiet || (git commit -m "Visual: $(jq -r .headline pending.json)" && git push)
+          git diff --cached --quiet || (git commit -m "Visual: $(jq -r .headline pending.json)" && git pull --rebase -q && git push)
+          echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
           echo "### Caption" >> $GITHUB_STEP_SUMMARY
           jq -r .caption pending.json >> $GITHUB_STEP_SUMMARY
 
@@ -54,10 +56,11 @@ jobs:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           IG_USER_ID: ${{ secrets.IG_USER_ID }}
           IG_API_ROUTE: ${{ vars.IG_API_ROUTE }}
+          IMAGE_SHA: ${{ steps.upload.outputs.sha }}
         run: python bot.py publish
 
       - name: Save posting log
         if: steps.prep.outputs.has_post == 'true' && inputs.dry_run != true
         run: |
           git add -A state/ posts/
-          git diff --cached --quiet || (git commit -m "Posted to Instagram" && git push)
+          git diff --cached --quiet || (git commit -m "Posted to Instagram" && git pull --rebase -q && git push)
