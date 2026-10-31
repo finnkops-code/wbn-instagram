@@ -557,14 +557,16 @@ def pinned_image_url(url: str) -> str:
     return url.replace("/main/", f"/{sha}/", 1) if sha else url
 
 
-def ig_publish(image_url: str, caption: str) -> str:
+def ig_publish(image_url: str, caption: str, collaborators: list[str] | None = None) -> str:
     token = ig_token()
     uid = ig_user_id(token)
     wait_public(image_url, timeout=300)
     last_err = ""
     for attempt in range(1, 4):  # Meta sometimes can't fetch a just-uploaded image yet: retry
-        r = requests.post(f"{ig_base()}/{uid}/media",
-                          data={"image_url": image_url, "caption": caption, "access_token": token}, timeout=60)
+        data = {"image_url": image_url, "caption": caption, "access_token": token}
+        if collaborators:
+            data["collaborators"] = json.dumps(collaborators[:3])
+        r = requests.post(f"{ig_base()}/{uid}/media", data=data, timeout=60)
         if r.status_code >= 400:
             last_err = f"create container failed: {r.status_code} {r.text[:400]}"
             log(f"  attempt {attempt}: {last_err}")
@@ -668,7 +670,7 @@ def cmd_publish():
     image_url = pinned_image_url(p["image_url"])
     log(f"Image: {image_url}")
     try:
-        media_id = ig_publish(image_url, p["caption"])
+        media_id = ig_publish(image_url, p["caption"], p.get("collaborators"))
     except Exception as e:
         # GitHub annotation: shows up in the run overview (and the public checks API) without opening logs
         print(f"::error title=Instagram publish failed::{str(e)[:900]}", flush=True)
@@ -677,7 +679,7 @@ def cmd_publish():
     state = load_state()
     state["posted"].append({
         "url": p["url"], "headline": p["headline"], "slot": p["slot"], "image": p["image_file"],
-        "media_id": media_id, "facebook_post_id": fb_id,
+        "media_id": media_id, "facebook_post_id": fb_id, "collaborators": p.get("collaborators") or None,
         "posted_at": datetime.now(TZ).isoformat(timespec="seconds"),
     })
     save_state(state)
@@ -753,6 +755,31 @@ def cmd_facebook_only(url: str):
     save_state(state)
 
 
+def cmd_prepare_url(url: str):
+    """Prepare a specific article (manual post), e.g. a partner article with Instagram collaborators."""
+    url = norm_url(url)
+    collabs = [c.strip().lstrip("@") for c in os.environ.get("COLLABORATORS", "").split(",") if c.strip()]
+    state = load_state()
+    if any(p["url"] == url for p in state["posted"]):
+        log(f"Already posted: {url}")
+        gh_output("has_post", "false")
+        return
+    lg = league_slug(url)
+    art = {"url": url, "slot": "manual", "league_label": CFG["league_labels"].get(lg), "home_title": None,
+           **article_meta(url)}
+    img = POSTS_DIR / f"{slug_of(url)}.jpg"
+    title = render(art, img)
+    pending = {
+        "url": url, "slot": "manual", "title_on_image": title, "headline": art["headline"],
+        "image_file": str(img.relative_to(ROOT)), "image_url": CFG["image_base_url"] + img.name,
+        "caption": build_caption(art), "caption_facebook": build_caption(art, "facebook"),
+        "collaborators": collabs,
+    }
+    PENDING_FILE.write_text(json.dumps(pending, indent=2, ensure_ascii=False), encoding="utf-8")
+    log(f"Prepared manual post: {art['headline']}  collaborators={collabs}")
+    gh_output("has_post", "true")
+
+
 def cmd_check():
     """Read-only connection check: which page/account the token belongs to and which permissions it has."""
     token = ig_token()
@@ -790,5 +817,6 @@ if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "preview"
     {"prepare": cmd_prepare, "publish": cmd_publish, "seed": cmd_seed, "refresh-token": cmd_refresh_token,
      "rank": cmd_rank, "check": cmd_check,
+     "prepare-url": lambda: cmd_prepare_url(sys.argv[2]),
      "facebook-only": lambda: cmd_facebook_only(sys.argv[2]),
      "preview": lambda: cmd_preview(sys.argv[2:])}.get(cmd, lambda: sys.exit(__doc__))()

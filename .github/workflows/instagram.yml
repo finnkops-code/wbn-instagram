@@ -9,6 +9,14 @@ on:
         description: "Only create the visual + caption, don't post"
         type: boolean
         default: false
+      url:
+        description: "Optional: post this specific article instead of the automatic pick"
+        type: string
+        default: ""
+      collaborators:
+        description: "Optional: Instagram collaborators for that article, comma separated (max 3)"
+        type: string
+        default: ""
       force:
         description: "Post the best available story now, ignoring score thresholds and time windows (daily max still applies)"
         type: boolean
@@ -41,7 +49,10 @@ jobs:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           DRY_RUN: ${{ inputs.dry_run == true }}
           FORCE_POST: ${{ inputs.force == true }}
-        run: python bot.py prepare
+          ARTICLE_URL: ${{ inputs.url }}
+          COLLABORATORS: ${{ inputs.collaborators }}
+        run: |
+          if [ -n "$ARTICLE_URL" ]; then python bot.py prepare-url "$ARTICLE_URL"; else python bot.py prepare; fi
 
       - name: Upload visual (Instagram fetches it from the public raw URL)
         id: upload
