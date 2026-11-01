@@ -17,8 +17,7 @@ Elk uur (rond :23) leest de bot de RSS-feed van de site (alle artikelen van de a
 
 **Wanneer gaat er iets live?**
 - **Score ≥ 60**: bij de eerstvolgende run (topnieuws).
-- **Score 40–59**: wacht tot het avondvenster (18:30–23:30 NL), en daar gaat het beste resterende artikel uit als er nog ruimte is.
-- **Onder 40**: wordt niet gepost.
+- **Onder 60**: wacht tot het avondvenster (18:30–23:30 NL); daar gaat het hoogst scorende resterende artikel uit als er nog ruimte is, ongeacht de score.
 - Max 3 posts per dag, max 1 per run. De **derde post blijft tot 15:00 vrij**, behalve voor breaking news (≥ 80), zodat er altijd ruimte is voor groot nieuws later op de dag.
 
 Elke run zet de volledige ranking met uitleg in de samenvatting van de GitHub Action, zodat je precies ziet waarom iets wel of niet gekozen is. Lokaal: `python bot.py rank`. Alle punten, woorden en tijden staan in `config.json` en zijn aan te passen.

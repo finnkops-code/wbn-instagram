@@ -121,7 +121,7 @@
     "international": "INTERNATIONAL"
   },
   "must_post_score": 60,
-  "min_post_score": 40,
+  "min_post_score": 0,
   "best_of_from": "18:30",
   "best_of_until": "23:30",
   "scoring": {
