@@ -1,7 +1,7 @@
 {
   "site_url": "https://worldbaseballnews.org/",
   "timezone": "Europe/Amsterdam",
-  "max_posts_per_day": 3,
+  "max_posts_per_day": 5,
   "min_minutes_between_posts": 60,
   "max_article_age_hours": 20,
   "title_max_chars": 70,

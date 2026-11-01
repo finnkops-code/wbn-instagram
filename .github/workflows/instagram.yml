@@ -3,7 +3,7 @@ name: Instagram autopost
 on:
   schedule:
     # Hourly checks: GitHub often delays or drops scheduled runs, so more checks = fewer missed posts.
-    # The bot itself still enforces max 3 posts/day, 60+ min between posts and the score/time rules.
+    # The bot itself still enforces max 5 posts/day, 60+ min between posts and the score/time rules.
     - cron: "23 * * * *"
   workflow_dispatch:
     inputs:
