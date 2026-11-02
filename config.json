@@ -272,6 +272,6 @@
     "international": "Europe/Amsterdam"
   },
   "window_late_minutes": 90,
-  "tag_players": true,
+  "tag_players": false,
   "tag_min_followers": 20000
 }
