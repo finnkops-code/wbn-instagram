@@ -683,20 +683,27 @@ def find_user_tags(headline: str, context: str = "") -> list[str]:
     known = json.loads((ROOT / "player_tags.json").read_text(encoding="utf-8")) if (ROOT / "player_tags.json").exists() else {}
     tags = []
     for name in player_names(headline, context):
+        if name in known:  # hand-checked handle: tag directly
+            log(f"  tag @{known[name]} for {name} (from player_tags.json)")
+            tags.append(known[name])
+            continue
         base = re.sub(r"[^a-z]", "", name.lower().replace("jr.", ""))
         parts = [re.sub(r"[^a-z]", "", p) for p in name.lower().replace("jr.", "").split()]
-        guesses = [known[name]] if name in known else [base, "_".join(parts), ".".join(parts), base + "_", "_" + base]
+        guesses = [base, "_".join(parts), ".".join(parts), base + "_", "_" + base]
         for handle in guesses:
             r = requests.get(f"{ig_base()}/{uid}", params={
                 "fields": f"business_discovery.username({handle}){{username,name,followers_count}}",
                 "access_token": token}, timeout=30).json()
             bd = r.get("business_discovery")
+            if not bd and r.get("error", {}).get("code") == 10:
+                print("::notice title=Tag lookup::automatic lookup needs the instagram_manage_insights permission", flush=True)
+                return tags[:3]
             if not bd:
                 print(f"::notice title=Tag lookup::{name}: @{handle} not found ({str(r.get('error', {}).get('message', ''))[:120]})", flush=True)
                 continue
             disp = re.sub(r"[^a-z]", "", (bd.get("name") or "").lower())
             print(f"::notice title=Tag lookup::{name}: @{bd['username']} name={bd.get('name')} followers={bd.get('followers_count')}", flush=True)
-            if name in known or (base and base in disp and bd.get("followers_count", 0) >= CFG["tag_min_followers"]):
+            if (base and base in disp and bd.get("followers_count", 0) >= CFG["tag_min_followers"]):
                 log(f"  tag @{bd['username']} for {name} ({bd.get('followers_count')} followers)")
                 tags.append(bd["username"])
                 break
