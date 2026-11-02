@@ -19,6 +19,10 @@ on:
         description: "Optional: Instagram collaborators for that article, comma separated (max 3)"
         type: string
         default: ""
+      slides:
+        description: "Optional: slides JSON in the repo (e.g. slides/xyz.json) to make a carousel"
+        type: string
+        default: ""
       force:
         description: "Post the best available story now, ignoring score thresholds and time windows (daily max still applies)"
         type: boolean
@@ -53,6 +57,7 @@ jobs:
           FORCE_POST: ${{ inputs.force == true }}
           ARTICLE_URL: ${{ inputs.url }}
           COLLABORATORS: ${{ inputs.collaborators }}
+          SLIDES: ${{ inputs.slides }}
         run: |
           if [ -n "$ARTICLE_URL" ]; then python bot.py prepare-url "$ARTICLE_URL"; else python bot.py prepare; fi
 

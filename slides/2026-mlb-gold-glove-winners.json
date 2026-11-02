@@ -1,0 +1,118 @@
+{
+  "slides": [
+    {
+      "kicker": "MLB",
+      "eyebrow": "2026 GOLD GLOVE WINNERS",
+      "title": "AMERICAN LEAGUE",
+      "rows": [
+        [
+          "Pitcher",
+          "Tanner Bibee",
+          "Cleveland Guardians"
+        ],
+        [
+          "Catcher",
+          "Dillon Dingler",
+          "Detroit Tigers"
+        ],
+        [
+          "First base",
+          "Christian Walker",
+          "Houston Astros"
+        ],
+        [
+          "Second base",
+          "Cole Young",
+          "Seattle Mariners"
+        ],
+        [
+          "Third base",
+          "Caleb Durbin",
+          "Boston Red Sox"
+        ],
+        [
+          "Shortstop",
+          "Taylor Walls",
+          "Tampa Bay Rays"
+        ],
+        [
+          "Left field",
+          "Cody Bellinger",
+          "New York Yankees"
+        ],
+        [
+          "Center field",
+          "Ceddanne Rafaela",
+          "Boston Red Sox"
+        ],
+        [
+          "Right field",
+          "Wilyer Abreu",
+          "Boston Red Sox"
+        ],
+        [
+          "Utility",
+          "Ezequiel Duran",
+          "Texas Rangers"
+        ]
+      ]
+    },
+    {
+      "kicker": "MLB",
+      "eyebrow": "2026 GOLD GLOVE WINNERS",
+      "title": "NATIONAL LEAGUE",
+      "rows": [
+        [
+          "Pitcher",
+          "Nolan McLean",
+          "New York Mets"
+        ],
+        [
+          "Catcher",
+          "Gabriel Moreno",
+          "Arizona Diamondbacks"
+        ],
+        [
+          "First base",
+          "Matt Olson",
+          "Atlanta Braves"
+        ],
+        [
+          "Second base",
+          "Brice Turang",
+          "Milwaukee Brewers"
+        ],
+        [
+          "Third base",
+          "Alex Bregman",
+          "Chicago Cubs"
+        ],
+        [
+          "Shortstop",
+          "Geraldo Perdomo",
+          "Arizona Diamondbacks"
+        ],
+        [
+          "Left field",
+          "Jackson Chourio",
+          "Milwaukee Brewers"
+        ],
+        [
+          "Center field",
+          "Pete Crow-Armstrong",
+          "Chicago Cubs"
+        ],
+        [
+          "Right field",
+          "Corbin Carroll",
+          "Arizona Diamondbacks"
+        ],
+        [
+          "Utility",
+          "Mauricio Dubón",
+          "Atlanta Braves"
+        ]
+      ]
+    }
+  ]
+}

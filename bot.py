@@ -44,6 +44,8 @@ PETROL_DEEP = (2, 38, 54)
 PETROL_LINE = (27, 77, 99)
 RED = (189, 0, 0)
 RED_BRIGHT = (226, 59, 59)
+RED_SOFT = (244, 199, 199)
+PETROL_MID = (11, 69, 96)
 ON_DARK = (197, 211, 218)
 ON_DARK_2 = (159, 182, 194)
 WHITE = (255, 255, 255)
@@ -506,6 +508,52 @@ def render(art: dict, out_path: Path) -> str:
     return title
 
 
+def draw_footer(draw, footer_top, cta="READ MORE · LINK IN BIO"):
+    draw.line([(MARGIN, footer_top), (W - MARGIN, footer_top)], fill=PETROL_LINE, width=2)
+    draw.text((MARGIN, footer_top + 66), "WORLDBASEBALLNEWS.ORG", font=font("oswald-600", 34), fill=ON_DARK, anchor="lm")
+    f_cta = font("figtree-800", 30)
+    tw = draw.textlength(cta, font=f_cta)
+    pill_w, pill_h = tw + 44 + 40, 64
+    px1, py = W - MARGIN, footer_top + 66
+    px0 = px1 - pill_w
+    draw.rounded_rectangle([px0, py - pill_h / 2, px1, py + pill_h / 2], radius=pill_h / 2, fill=RED)
+    draw.text((px0 + 26, py), cta, font=f_cta, fill=WHITE, anchor="lm")
+    ax = px0 + 26 + tw + 14
+    draw.polygon([(ax, py - 10), (ax + 18, py), (ax, py + 10)], fill=WHITE)
+
+
+def render_list_slide(slide: dict, out_path: Path):
+    """Carousel slide with a ranked/positional list (e.g. award winners): label | name | team."""
+    canvas = Image.new("RGB", (W, H), PETROL_DEEP)
+    draw = ImageDraw.Draw(canvas)
+    # subtle top band
+    canvas.paste(Image.new("RGB", (W, 6), RED), (0, 0))
+    y = 92
+    x = draw_chevrons(draw, MARGIN, y + 6, RED_BRIGHT)
+    f_chip = font("figtree-800", 28)
+    lw = draw.textlength(slide["kicker"], font=f_chip)
+    draw.rounded_rectangle([x + 8, y - 6, x + 8 + lw + 32, y + 40], radius=8, fill=RED)
+    draw.text((x + 24, y + 17), slide["kicker"], font=f_chip, fill=WHITE, anchor="lm")
+    draw.text((x + 8 + lw + 32 + 18, y + 17), slide.get("eyebrow", ""), font=font("figtree-700", 26),
+              fill=ON_DARK_2, anchor="lm")
+    draw.text((MARGIN, 160), slide["title"], font=font("oswald-700", 100), fill=WHITE)
+    rows = slide["rows"]
+    top, bottom = 320, H - 132 - 36
+    row_h = (bottom - top) / len(rows)
+    f_lbl, f_name, f_team = font("figtree-800", 22), font("oswald-600", 46), font("figtree-500", 26)
+    for i, (label, name, team) in enumerate(rows):
+        ry = top + i * row_h
+        if i % 2 == 0:
+            draw.rounded_rectangle([MARGIN - 20, ry + 4, W - MARGIN + 20, ry + row_h - 4], radius=10, fill=PETROL_MID)
+        cy = ry + row_h / 2
+        draw.text((MARGIN, cy), label.upper(), font=f_lbl, fill=RED_SOFT, anchor="lm")
+        draw.text((MARGIN + 250, cy), name.upper(), font=f_name, fill=WHITE, anchor="lm")
+        draw.text((W - MARGIN, cy), team, font=f_team, fill=ON_DARK_2, anchor="rm")
+    draw_footer(draw, H - 132, slide.get("cta", "FULL LIST · LINK IN BIO"))
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    canvas.save(out_path, "JPEG", quality=90, optimize=True, progressive=False)
+
+
 # ----------------------------------------------------------------------------- 4. caption
 EMOJI_RULES = [
     (r"\b(wins?|won|champions?|crowned|title|clinch\w*|MVP|sweep\w*)\b", "🏆"),
@@ -624,6 +672,70 @@ def ig_publish(image_url: str, caption: str, collaborators: list[str] | None = N
     raise RuntimeError(last_err)
 
 
+def wait_container(cid: str, token: str) -> str:
+    status = None
+    for _ in range(10):
+        s = requests.get(f"{ig_base()}/{cid}", params={"fields": "status_code,status", "access_token": token},
+                         timeout=30).json()
+        status = s.get("status_code")
+        log(f"  container {cid}: {status} {s.get('status', '')}")
+        if status in ("FINISHED", "ERROR", "EXPIRED"):
+            break
+        time.sleep(20)
+    if status != "FINISHED":
+        raise RuntimeError(f"container {cid} {status}: {s}")
+    return cid
+
+
+def ig_publish_carousel(image_urls: list[str], caption: str, collaborators: list[str] | None = None) -> str:
+    token = ig_token()
+    uid = ig_user_id(token)
+    children = []
+    for u in image_urls:
+        wait_public(u, timeout=300)
+        r = requests.post(f"{ig_base()}/{uid}/media",
+                          data={"image_url": u, "is_carousel_item": "true", "access_token": token}, timeout=60)
+        if r.status_code >= 400:
+            raise RuntimeError(f"carousel item failed: {r.status_code} {r.text[:400]}")
+        children.append(wait_container(r.json()["id"], token))
+    data = {"media_type": "CAROUSEL", "children": ",".join(children), "caption": caption, "access_token": token}
+    if collaborators:
+        data["collaborators"] = json.dumps(collaborators[:3])
+    r = requests.post(f"{ig_base()}/{uid}/media", data=data, timeout=60)
+    if r.status_code >= 400:
+        raise RuntimeError(f"carousel container failed: {r.status_code} {r.text[:400]}")
+    cid = wait_container(r.json()["id"], token)
+    r = requests.post(f"{ig_base()}/{uid}/media_publish", data={"creation_id": cid, "access_token": token}, timeout=60)
+    if r.status_code >= 400:
+        raise RuntimeError(f"carousel publish failed: {r.status_code} {r.text[:400]}")
+    return r.json()["id"]
+
+
+def fb_publish_multi(image_urls: list[str], caption: str) -> str | None:
+    """Facebook multi-photo post: upload photos unpublished, then one feed post with all of them."""
+    if ig_route() != "facebook" or not CFG.get("post_to_facebook", True):
+        return None
+    try:
+        page_id, page_token = fb_page(ig_token())
+        ids = []
+        for u in image_urls:
+            r = requests.post(f"{ig_base()}/{page_id}/photos",
+                              data={"url": u, "published": "false", "access_token": page_token}, timeout=60)
+            r.raise_for_status()
+            ids.append(r.json()["id"])
+        data = {"message": caption, "access_token": page_token}
+        for i, pid in enumerate(ids):
+            data[f"attached_media[{i}]"] = json.dumps({"media_fbid": pid})
+        r = requests.post(f"{ig_base()}/{page_id}/feed", data=data, timeout=60)
+        if r.status_code >= 400:
+            log(f"  Facebook multi-photo failed (Instagram post is fine): {r.status_code} {r.text[:300]}")
+            return None
+        return r.json().get("id")
+    except Exception as e:
+        log(f"  Facebook multi-photo failed (Instagram post is fine): {e}")
+        return None
+
+
 # ----------------------------------------------------------------------------- commands
 def cmd_prepare():
     if not os.environ.get("IG_ACCESS_TOKEN") and os.environ.get("DRY_RUN") != "true":
@@ -697,14 +809,20 @@ def cmd_publish():
         return
     p = json.loads(PENDING_FILE.read_text(encoding="utf-8"))
     image_url = pinned_image_url(p["image_url"])
-    log(f"Image: {image_url}")
+    extra_urls = [pinned_image_url(CFG["image_base_url"] + n) for n in p.get("extra_images") or []]
+    log(f"Image: {image_url}  (+{len(extra_urls)} slides)")
     try:
-        media_id = ig_publish(image_url, p["caption"], p.get("collaborators"))
+        if extra_urls:
+            media_id = ig_publish_carousel([image_url] + extra_urls, p["caption"], p.get("collaborators"))
+        else:
+            media_id = ig_publish(image_url, p["caption"], p.get("collaborators"))
     except Exception as e:
         # GitHub annotation: shows up in the run overview (and the public checks API) without opening logs
         print(f"::error title=Instagram publish failed::{str(e)[:900]}", flush=True)
         raise
-    fb_id = fb_publish(image_url, p.get("caption_facebook") or p["caption"])
+    fb_caption = p.get("caption_facebook") or p["caption"]
+    fb_id = (fb_publish_multi([image_url] + extra_urls, fb_caption) if extra_urls
+             else fb_publish(image_url, fb_caption))
     state = load_state()
     state["posted"].append({
         "url": p["url"], "headline": p["headline"], "slot": p["slot"], "image": p["image_file"],
@@ -798,10 +916,22 @@ def cmd_prepare_url(url: str):
            **article_meta(url)}
     img = POSTS_DIR / f"{slug_of(url)}.jpg"
     title = render(art, img)
+    extra = []
+    slides_file = os.environ.get("SLIDES", "").strip()
+    if slides_file:
+        for i, slide in enumerate(json.loads((ROOT / slides_file).read_text(encoding="utf-8"))["slides"], start=2):
+            f = POSTS_DIR / f"{slug_of(url)}-{i}.jpg"
+            render_list_slide(slide, f)
+            extra.append(f.name)
+    cap_ig, cap_fb = build_caption(art), build_caption(art, "facebook")
+    if extra:
+        swipe = "➡️ Swipe for the full lists."
+        cap_ig = cap_ig.replace("\n\n👉", f"\n\n{swipe}\n\n👉", 1)
+        cap_fb = cap_fb.replace("\n\n👉", f"\n\n{swipe}\n\n👉", 1)
     pending = {
-        "url": url, "slot": "manual", "title_on_image": title, "headline": art["headline"],
+        "url": url, "slot": "manual", "extra_images": extra, "title_on_image": title, "headline": art["headline"],
         "image_file": str(img.relative_to(ROOT)), "image_url": CFG["image_base_url"] + img.name,
-        "caption": build_caption(art), "caption_facebook": build_caption(art, "facebook"),
+        "caption": cap_ig, "caption_facebook": cap_fb,
         "collaborators": collabs,
     }
     PENDING_FILE.write_text(json.dumps(pending, indent=2, ensure_ascii=False), encoding="utf-8")
