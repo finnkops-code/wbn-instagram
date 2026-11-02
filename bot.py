@@ -206,13 +206,13 @@ def posted_today(state: dict) -> list[dict]:
             and datetime.fromisoformat(p["posted_at"]).astimezone(TZ).date() == today]
 
 
-def ranked(state: dict) -> list[dict]:
+def ranked(state: dict, max_age_hours: float | None = None) -> list[dict]:
     done = {p["url"] for p in state["posted"]}
     today, popular = posted_today(state), most_read_urls()
     now = datetime.now(TZ)
     recent = [p for p in state["posted"] if p.get("posted_at") and not p.get("seeded") and p not in today
               and now - datetime.fromisoformat(p["posted_at"]) <= timedelta(days=SC["rotation_days"])]
-    max_age = timedelta(hours=CFG["max_article_age_hours"])
+    max_age = timedelta(hours=max_age_hours or CFG["max_article_age_hours"])
     out = []
     for c in feed_candidates():
         if c["url"] in done or not c["feed_image"]:
@@ -272,9 +272,21 @@ def in_best_of_window() -> bool:
     return CFG["best_of_from"] <= now <= CFG["best_of_until"]
 
 
+def behind_schedule(state: dict) -> tuple[bool, str]:
+    """Minimum posts per day: by each checkpoint time at least N posts must be out (e.g. 11:00→1, 16:00→2, 20:30→3)."""
+    now_hm = datetime.now(TZ).strftime("%H:%M")
+    done = len(posted_today(state))
+    target = max([n for hm, n in CFG.get("min_posts_schedule", {}).items() if now_hm >= hm], default=0)
+    return done < target, f"{done} posted, minimum by now is {target}"
+
+
 def pick_next(state: dict) -> dict | None:
-    """Must-post news goes out right away; otherwise the best remaining story is posted in the evening window."""
+    """Must-post news goes out right away; otherwise the best remaining story is posted in the evening window.
+    If the day is behind its minimum-posts schedule, the best available story goes out regardless of score."""
+    behind, why_behind = behind_schedule(state)
     ranking = ranked(state)
+    if behind and not ranking:  # nothing fresh: widen the window so the minimum can still be met
+        ranking = ranked(state, CFG.get("fallback_article_age_hours", 48))
     summary = ["| Score | Artikel | Waarom |", "|---:|---|---|"]
     for c in ranking:
         log(f"  {c['score']:>3}  {c['home_title'][:70]}  [{'; '.join(c['why'])}]")
@@ -296,6 +308,8 @@ def pick_next(state: dict) -> dict | None:
         return None
     if force:
         pass
+    elif behind:
+        log(f"Behind minimum schedule ({why_behind}): posting best available story (score {top['score']})")
     elif top["score"] >= CFG["must_post_score"]:
         log(f"Must-post (score {top['score']} >= {CFG['must_post_score']})")
     elif in_best_of_window() and top["score"] >= CFG["min_post_score"]:

@@ -206,5 +206,12 @@
   },
   "reserve_last_slot_until": "15:00",
   "breaking_score": 80,
-  "post_to_facebook": true
+  "post_to_facebook": true,
+  "min_posts_per_day": 3,
+  "min_posts_schedule": {
+    "11:00": 1,
+    "16:00": 2,
+    "20:30": 3
+  },
+  "fallback_article_age_hours": 48
 }

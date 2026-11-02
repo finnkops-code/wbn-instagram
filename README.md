@@ -17,6 +17,7 @@ Elk uur (rond :23) leest de bot de RSS-feed van de site (alle artikelen van de a
 
 **Wanneer gaat er iets live?**
 - **Score ≥ 60**: bij de eerstvolgende run (topnieuws).
+- **Minimum 3 per dag**: om 11:00 moet er minstens 1 post zijn, om 16:00 minstens 2 en om 20:30 minstens 3. Loopt de dag achter, dan gaat bij de eerstvolgende run het hoogst scorende artikel live, ongeacht de score (is er niets van de afgelopen 20 uur, dan kijkt de bot tot 48 uur terug).
 - **Onder 60**: wacht tot het avondvenster (18:30–23:30 NL); daar gaat het hoogst scorende resterende artikel uit als er nog ruimte is, ongeacht de score.
 - Max 5 posts per dag, max 1 per run. De **derde post blijft tot 15:00 vrij**, behalve voor breaking news (≥ 80), zodat er altijd ruimte is voor groot nieuws later op de dag.
 
