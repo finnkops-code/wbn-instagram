@@ -638,7 +638,78 @@ def pinned_image_url(url: str) -> str:
     return url.replace("/main/", f"/{sha}/", 1) if sha else url
 
 
-def ig_publish(image_url: str, caption: str, collaborators: list[str] | None = None) -> str:
+NAME_RX = re.compile(r"\b([A-Z][a-zà-ÿ'’.-]+(?:\s+(?:de|del|la|van|Jr\.)?\s*[A-Z][a-zà-ÿ'’.-]+){1,2})")
+NOT_PEOPLE = set("""World Series Gold Glove Korean Japan Major League Baseball American National League Game Fall Playoff
+Lions Tigers Giants Eagles Hawks Rays Reds Mets Cubs Braves Brewers Yankees Astros Dodgers Padres Guardians Mariners
+Red Sox Blue Jays White Orioles Royals Twins Rangers Angels Athletics Phillies Marlins Nationals Pirates Cardinals
+Rockies Diamondbacks Bravos Cardenales Tiburones Caribes Leones Tigres Toros Gigantes Estrellas Aguilas Águilas Licey
+Samsung KIA Orix Rakuten SoftBank BayStars Swallows Carp Dragons Fighters Marines Buffaloes Uni-President Coast Long Beach
+Cy Young Rookie Year Most Valuable Player Hall Fame Platinum Silver Slugger Opening Day Spring Training""".split())
+
+
+def player_names(headline: str, context: str = "") -> list[str]:
+    """Player names = capitalised 2-3 word sequences in the (sentence-case) description/alt text that also
+    appear in the headline. Headlines are Title Case, so they can't be used alone."""
+    tok = r"[A-ZÀ-Ý][\wà-ÿ'’.-]*[\wà-ÿ]"
+    rx = re.compile(rf"\b({tok}(?:\s+{tok}){{1,2}})")
+    h = headline.lower()
+    out = []
+    for src in (context, headline) if context else (headline,):
+        for m in rx.finditer(src):
+            words = [w for w in m.group(1).split() if w not in ("Jr.", "Jr")]
+            while words and words[0] in NOT_PEOPLE:
+                words = words[1:]
+            while words and words[-1] in NOT_PEOPLE:
+                words = words[:-1]
+            name = " ".join(words)
+            if len(words) >= 2 and not any(w in NOT_PEOPLE for w in words) and all(w.lower() in h for w in words) \
+                    and name not in out:
+                out.append(name)
+        if out:
+            break
+    return out[:3]
+
+
+def find_user_tags(headline: str, context: str = "") -> list[str]:
+    """Instagram handles of players named in the headline. Only accounts that Instagram's business discovery
+    confirms (public creator/business account, display name matches the player, enough followers) are used,
+    so we never tag a random namesake. Known handles can be added to player_tags.json."""
+    if not CFG.get("tag_players", True):
+        return []
+    try:
+        token, uid = ig_token(), ig_user_id(ig_token())
+    except SystemExit:
+        return []
+    known = json.loads((ROOT / "player_tags.json").read_text(encoding="utf-8")) if (ROOT / "player_tags.json").exists() else {}
+    tags = []
+    for name in player_names(headline, context):
+        base = re.sub(r"[^a-z]", "", name.lower().replace("jr.", ""))
+        parts = [re.sub(r"[^a-z]", "", p) for p in name.lower().replace("jr.", "").split()]
+        guesses = [known[name]] if name in known else [base, "_".join(parts), ".".join(parts), base + "_", "_" + base]
+        for handle in guesses:
+            r = requests.get(f"{ig_base()}/{uid}", params={
+                "fields": f"business_discovery.username({handle}){{username,name,followers_count}}",
+                "access_token": token}, timeout=30).json()
+            bd = r.get("business_discovery")
+            if not bd:
+                continue
+            disp = re.sub(r"[^a-z]", "", (bd.get("name") or "").lower())
+            if name in known or (base and base in disp and bd.get("followers_count", 0) >= CFG["tag_min_followers"]):
+                log(f"  tag @{bd['username']} for {name} ({bd.get('followers_count')} followers)")
+                tags.append(bd["username"])
+                break
+        else:
+            log(f"  no verified Instagram account found for {name}")
+    return tags[:3]
+
+
+def user_tags_param(handles: list[str]) -> str:
+    spots = [(0.5, 0.25), (0.3, 0.35), (0.7, 0.35)]
+    return json.dumps([{"username": h, "x": spots[i][0], "y": spots[i][1]} for i, h in enumerate(handles)])
+
+
+def ig_publish(image_url: str, caption: str, collaborators: list[str] | None = None,
+               user_tags: list[str] | None = None) -> str:
     token = ig_token()
     uid = ig_user_id(token)
     wait_public(image_url, timeout=300)
@@ -647,7 +718,14 @@ def ig_publish(image_url: str, caption: str, collaborators: list[str] | None = N
         data = {"image_url": image_url, "caption": caption, "access_token": token}
         if collaborators:
             data["collaborators"] = json.dumps(collaborators[:3])
+        if user_tags:
+            data["user_tags"] = user_tags_param(user_tags)
         r = requests.post(f"{ig_base()}/{uid}/media", data=data, timeout=60)
+        if r.status_code >= 400 and user_tags:  # never let a tag block the post
+            log(f"  tagging failed, posting without tags: {r.text[:200]}")
+            data.pop("user_tags")
+            user_tags = None
+            r = requests.post(f"{ig_base()}/{uid}/media", data=data, timeout=60)
         if r.status_code >= 400:
             last_err = f"create container failed: {r.status_code} {r.text[:400]}"
             log(f"  attempt {attempt}: {last_err}")
@@ -691,14 +769,20 @@ def wait_container(cid: str, token: str) -> str:
     return cid
 
 
-def ig_publish_carousel(image_urls: list[str], caption: str, collaborators: list[str] | None = None) -> str:
+def ig_publish_carousel(image_urls: list[str], caption: str, collaborators: list[str] | None = None,
+                        user_tags: list[str] | None = None) -> str:
     token = ig_token()
     uid = ig_user_id(token)
     children = []
-    for u in image_urls:
+    for i, u in enumerate(image_urls):
         wait_public(u, timeout=300)
-        r = requests.post(f"{ig_base()}/{uid}/media",
-                          data={"image_url": u, "is_carousel_item": "true", "access_token": token}, timeout=60)
+        item = {"image_url": u, "is_carousel_item": "true", "access_token": token}
+        if i == 0 and user_tags:
+            item["user_tags"] = user_tags_param(user_tags)
+        r = requests.post(f"{ig_base()}/{uid}/media", data=item, timeout=60)
+        if r.status_code >= 400 and "user_tags" in item:
+            item.pop("user_tags")
+            r = requests.post(f"{ig_base()}/{uid}/media", data=item, timeout=60)
         if r.status_code >= 400:
             raise RuntimeError(f"carousel item failed: {r.status_code} {r.text[:400]}")
         children.append(wait_container(r.json()["id"], token))
@@ -764,6 +848,7 @@ def cmd_prepare():
     pending = {
         "url": art["url"], "slot": art["slot"], "title_on_image": title, "headline": art["headline"],
         "image_file": str(img.relative_to(ROOT)), "image_url": CFG["image_base_url"] + img.name, "caption": caption,
+        "tag_context": f"{art.get('image_alt') or ''} {art.get('description') or ''}",
         "caption_facebook": build_caption(art, "facebook"),
     }
     PENDING_FILE.write_text(json.dumps(pending, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -816,10 +901,15 @@ def cmd_publish():
     extra_urls = [pinned_image_url(CFG["image_base_url"] + n) for n in p.get("extra_images") or []]
     log(f"Image: {image_url}  (+{len(extra_urls)} slides)")
     try:
+        tags = find_user_tags(p["headline"], p.get("tag_context", ""))
+    except Exception as e:
+        log(f"  tag lookup failed, posting without tags: {e}")
+        tags = []
+    try:
         if extra_urls:
-            media_id = ig_publish_carousel([image_url] + extra_urls, p["caption"], p.get("collaborators"))
+            media_id = ig_publish_carousel([image_url] + extra_urls, p["caption"], p.get("collaborators"), tags)
         else:
-            media_id = ig_publish(image_url, p["caption"], p.get("collaborators"))
+            media_id = ig_publish(image_url, p["caption"], p.get("collaborators"), tags)
     except Exception as e:
         # GitHub annotation: shows up in the run overview (and the public checks API) without opening logs
         print(f"::error title=Instagram publish failed::{str(e)[:900]}", flush=True)
@@ -830,7 +920,7 @@ def cmd_publish():
     state = load_state()
     state["posted"].append({
         "url": p["url"], "headline": p["headline"], "slot": p["slot"], "image": p["image_file"],
-        "media_id": media_id, "facebook_post_id": fb_id, "collaborators": p.get("collaborators") or None,
+        "media_id": media_id, "facebook_post_id": fb_id, "tags": tags or None, "collaborators": p.get("collaborators") or None,
         "posted_at": datetime.now(TZ).isoformat(timespec="seconds"),
     })
     save_state(state)
@@ -936,11 +1026,22 @@ def cmd_prepare_url(url: str):
         "url": url, "slot": "manual", "extra_images": extra, "title_on_image": title, "headline": art["headline"],
         "image_file": str(img.relative_to(ROOT)), "image_url": CFG["image_base_url"] + img.name,
         "caption": cap_ig, "caption_facebook": cap_fb,
+        "tag_context": f"{art.get('image_alt') or ''} {art.get('description') or ''}",
         "collaborators": collabs,
     }
     PENDING_FILE.write_text(json.dumps(pending, indent=2, ensure_ascii=False), encoding="utf-8")
     log(f"Prepared manual post: {art['headline']}  collaborators={collabs}")
     gh_output("has_post", "true")
+
+
+def cmd_tags(headline: str):
+    ctx = ""
+    if headline.startswith("http"):
+        m = article_meta(norm_url(headline))
+        headline, ctx = m["headline"], f"{m.get('image_alt') or ''} {m.get('description') or ''}"
+    log(f"Headline: {headline}")
+    log(f"Names found: {player_names(headline, ctx)}")
+    log(f"Verified tags: {find_user_tags(headline, ctx)}")
 
 
 def cmd_check():
@@ -979,7 +1080,7 @@ def cmd_rank():
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "preview"
     {"prepare": cmd_prepare, "publish": cmd_publish, "seed": cmd_seed, "refresh-token": cmd_refresh_token,
-     "rank": cmd_rank, "check": cmd_check,
+     "rank": cmd_rank, "check": cmd_check, "tags": lambda: cmd_tags(sys.argv[2]),
      "prepare-url": lambda: cmd_prepare_url(sys.argv[2]),
      "facebook-only": lambda: cmd_facebook_only(sys.argv[2]),
      "preview": lambda: cmd_preview(sys.argv[2:])}.get(cmd, lambda: sys.exit(__doc__))()

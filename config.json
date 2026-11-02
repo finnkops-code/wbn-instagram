@@ -271,5 +271,7 @@
     "nbl": "Europe/London",
     "international": "Europe/Amsterdam"
   },
-  "window_late_minutes": 90
+  "window_late_minutes": 90,
+  "tag_players": true,
+  "tag_min_followers": 20000
 }
