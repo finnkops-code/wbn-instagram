@@ -267,57 +267,72 @@ def can_post_now(state: dict) -> tuple[bool, str]:
     return True, f"{len(today)}/{CFG['max_posts_per_day']} posted today"
 
 
-def in_best_of_window() -> bool:
-    now = datetime.now(TZ).strftime("%H:%M")
-    return CFG["best_of_from"] <= now <= CFG["best_of_until"]
-
-
-def behind_schedule(state: dict) -> tuple[bool, str]:
-    """Minimum posts per day: by each checkpoint time at least N posts must be out (e.g. 11:00→1, 16:00→2, 20:30→3)."""
-    now_hm = datetime.now(TZ).strftime("%H:%M")
-    done = len(posted_today(state))
-    target = max([n for hm, n in CFG.get("min_posts_schedule", {}).items() if now_hm >= hm], default=0)
-    return done < target, f"{done} posted, minimum by now is {target}"
+def local_timing(url: str) -> tuple[str, bool, bool]:
+    """Local time for the league's home audience, and whether that's an active / prime posting moment there."""
+    tzname = CFG["league_timezones"].get(league_slug(url), CFG["default_audience_timezone"])
+    hm = datetime.now(ZoneInfo(tzname)).strftime("%H:%M")
+    a_from, a_to = CFG["local_active"]
+    active = a_from <= hm <= a_to
+    prime = any(f <= hm <= t for f, t in CFG["local_prime"])
+    return f"{hm} {tzname.split('/')[-1].replace('_', ' ')}", active, prime
 
 
 def pick_next(state: dict) -> dict | None:
-    """Must-post news goes out right away; otherwise the best remaining story is posted in the evening window.
-    If the day is behind its minimum-posts schedule, the best available story goes out regardless of score."""
-    behind, why_behind = behind_schedule(state)
+    """Timing follows each league's home audience:
+    - score >= must_post: posted as soon as it's daytime (active window) for that league's fans
+    - below that: posted in that audience's prime time, as long as today's minimum isn't reached yet
+    - late in the (NL) day and still under the minimum: best available story, whatever its timing/score
+    """
+    done = len(posted_today(state))
+    minimum = CFG["min_posts_per_day"]
+    now_hm = datetime.now(TZ).strftime("%H:%M")
+    catch_up = done < minimum and now_hm >= CFG["catch_up_from"]
     ranking = ranked(state)
-    if behind and not ranking:  # nothing fresh: widen the window so the minimum can still be met
+    if catch_up and not ranking:  # nothing fresh: widen the window so the minimum can still be met
         ranking = ranked(state, CFG.get("fallback_article_age_hours", 48))
+    for c in ranking:
+        c["local"], c["active"], c["prime"] = local_timing(c["url"])
+        if c["prime"]:
+            c["score"] += CFG["prime_time_bonus"]
+            c["why"].append(f"prime time for its fans +{CFG['prime_time_bonus']}")
+        c["why"].append(f"local {c['local']}" + ("" if c["active"] else " (night there)"))
+    ranking.sort(key=lambda c: c["score"], reverse=True)
+
     summary = ["| Score | Artikel | Waarom |", "|---:|---|---|"]
     for c in ranking:
         log(f"  {c['score']:>3}  {c['home_title'][:70]}  [{'; '.join(c['why'])}]")
         summary.append(f"| {c['score']} | {c['home_title']} | {'; '.join(c['why'])} |")
     if os.environ.get("GITHUB_STEP_SUMMARY"):
         with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
-            f.write("### Ranking\n" + "\n".join(summary) + "\n\n")
+            f.write(f"### Ranking ({done}/{minimum}-{CFG['max_posts_per_day']} posted today)\n"
+                    + "\n".join(summary) + "\n\n")
     if not ranking:
         return None
-    top = ranking[0]
-    now_hm = datetime.now(TZ).strftime("%H:%M")
-    last_slot = len(posted_today(state)) == CFG["max_posts_per_day"] - 1
+
     force = os.environ.get("FORCE_POST") == "true"
+    active = [c for c in ranking if c["active"]]
+    must = [c for c in active if c["score"] >= CFG["must_post_score"]]
+    prime = [c for c in active if c["prime"] and c["score"] >= CFG["prime_min_score"]]
+    real = [p for p in state["posted"] if p.get("posted_at") and not p.get("seeded")]
+    hours_since = ((datetime.now(TZ) - max(datetime.fromisoformat(p["posted_at"]) for p in real)).total_seconds() / 3600
+                   if real else 99)
+    spaced = hours_since >= CFG["min_hours_between_regular_posts"]
+    last_slot = done == CFG["max_posts_per_day"] - 1
     if force:
-        log(f"Manual run with force: posting best available story (score {top['score']})")
-    elif last_slot and now_hm < CFG["reserve_last_slot_until"] and top["score"] < CFG["breaking_score"]:
-        log(f"Last slot of the day is kept free until {CFG['reserve_last_slot_until']} "
-            f"(only breaking news >= {CFG['breaking_score']} may use it; best now {top['score']}).")
-        return None
-    if force:
-        pass
-    elif behind:
-        log(f"Behind minimum schedule ({why_behind}): posting best available story (score {top['score']})")
-    elif top["score"] >= CFG["must_post_score"]:
-        log(f"Must-post (score {top['score']} >= {CFG['must_post_score']})")
-    elif in_best_of_window() and top["score"] >= CFG["min_post_score"]:
-        log(f"Best-of window: posting best remaining story (score {top['score']})")
+        top, why = ranking[0], "manual run with force"
+    elif must:
+        top, why = must[0], f"must-post (score >= {CFG['must_post_score']}), daytime for its fans"
+    elif done < minimum and prime and spaced:
+        top, why = prime[0], f"prime time for its fans, {done}/{minimum} minimum posted"
+    elif catch_up:
+        top, why = (active or ranking)[0], f"catch-up after {CFG['catch_up_from']}: {done}/{minimum} minimum posted"
     else:
-        log(f"Best is {top['score']}: below must-post {CFG['must_post_score']}; waiting for "
-            f"{CFG['best_of_from']}-{CFG['best_of_until']} window (min {CFG['min_post_score']}).")
+        log(f"Nothing to post now ({done} posted; minimum {minimum} reached or no league in prime time).")
         return None
+    if last_slot and not force and now_hm < CFG["reserve_last_slot_until"] and top["score"] < CFG["breaking_score"]:
+        log(f"Last slot kept free until {CFG['reserve_last_slot_until']} for breaking news (best now {top['score']}).")
+        return None
+    log(f"Posting: {why} → [{top['score']}] {top['home_title']}")
     m = article_meta(top["url"])
     m["image"] = m["image"] or top["feed_image"]
     m["description"] = m["description"] or top["feed_description"]

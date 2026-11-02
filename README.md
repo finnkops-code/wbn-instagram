@@ -15,11 +15,11 @@ Elk uur (rond :23) leest de bot de RSS-feed van de site (alle artikelen van de a
 | Variatie | zelfde verhaal als eerdere post vandaag −35 · elke eerdere post uit dezelfde league vandaag −12 · elke post uit die league eerder deze week −3 (zo komen leagues om de beurt) |
 | Toeval | +0 tot 8 willekeurig, vast per artikel per dag, zodat gelijkwaardige artikelen eerlijk om de beurt winnen |
 
-**Wanneer gaat er iets live?**
-- **Score ≥ 60**: bij de eerstvolgende run (topnieuws).
-- **Minimum 3 per dag**: om 11:00 moet er minstens 1 post zijn, om 16:00 minstens 2 en om 20:30 minstens 3. Loopt de dag achter, dan gaat bij de eerstvolgende run het hoogst scorende artikel live, ongeacht de score (is er niets van de afgelopen 20 uur, dan kijkt de bot tot 48 uur terug).
-- **Onder 60**: wacht tot het avondvenster (18:30–23:30 NL); daar gaat het hoogst scorende resterende artikel uit als er nog ruimte is, ongeacht de score.
-- Max 5 posts per dag, max 1 per run. De **derde post blijft tot 15:00 vrij**, behalve voor breaking news (≥ 80), zodat er altijd ruimte is voor groot nieuws later op de dag.
+**Wanneer gaat er iets live?** De timing volgt het thuispubliek van elke league: MLB op Amerikaanse tijd, NPB op Japanse, KBO op Koreaanse, de Hoofdklasse op Nederlandse tijd, enzovoort (zie `league_timezones` in `config.json`).
+- **Score ≥ 60**: gaat live zodra het daar overdag is (07:00–23:00 lokale tijd van die league).
+- **Lager**: gaat live in de prime time van dat publiek (07:00–09:30, 12:00–14:00 of 18:00–22:30 lokaal, +8 punten), zolang het minimum van 3 per dag nog niet gehaald is, met een score van minstens 25 en minstens 3 uur na de vorige post (zo worden de posts over de tijdzones verspreid).
+- **Vangnet**: staan er om 21:00 (NL) nog geen 3 posts, dan gaat het beste beschikbare artikel live (desnoods tot 48 uur oud).
+- Min 3, max 5 posts per Nederlandse kalenderdag, minstens 1 uur ertussen. De 5e plek blijft tot 15:00 vrij voor breaking news (≥ 80).
 
 Elke run zet de volledige ranking met uitleg in de samenvatting van de GitHub Action, zodat je precies ziet waarom iets wel of niet gekozen is. Lokaal: `python bot.py rank`. Alle punten, woorden en tijden staan in `config.json` en zijn aan te passen.
 

@@ -121,9 +121,6 @@
     "international": "INTERNATIONAL"
   },
   "must_post_score": 60,
-  "min_post_score": 0,
-  "best_of_from": "18:30",
-  "best_of_until": "23:30",
   "scoring": {
     "topics": {
       "title won": {
@@ -208,10 +205,73 @@
   "breaking_score": 80,
   "post_to_facebook": true,
   "min_posts_per_day": 3,
-  "min_posts_schedule": {
-    "11:00": 1,
-    "16:00": 2,
-    "20:30": 3
+  "fallback_article_age_hours": 48,
+  "catch_up_from": "21:00",
+  "prime_time_bonus": 8,
+  "local_active": [
+    "07:00",
+    "23:00"
+  ],
+  "local_prime": [
+    [
+      "07:00",
+      "09:30"
+    ],
+    [
+      "12:00",
+      "14:00"
+    ],
+    [
+      "18:00",
+      "22:30"
+    ]
+  ],
+  "default_audience_timezone": "Europe/Amsterdam",
+  "league_timezones": {
+    "mlb": "America/New_York",
+    "milb": "America/New_York",
+    "afl": "America/Phoenix",
+    "international-league": "America/New_York",
+    "pcl": "America/Los_Angeles",
+    "eastern-league": "America/New_York",
+    "southern-league": "America/Chicago",
+    "texas-league": "America/Chicago",
+    "south-atlantic-league": "America/New_York",
+    "midwest-league": "America/Chicago",
+    "northwest-league": "America/Los_Angeles",
+    "carolina-league": "America/New_York",
+    "florida-state-league": "America/New_York",
+    "california-league": "America/Los_Angeles",
+    "atlantic-league": "America/New_York",
+    "american-association": "America/Chicago",
+    "frontier-league": "America/Chicago",
+    "cbl": "America/Toronto",
+    "lmb": "America/Mexico_City",
+    "lmp": "America/Hermosillo",
+    "lidom": "America/Santo_Domingo",
+    "lvbp": "America/Caracas",
+    "lbprc": "America/Puerto_Rico",
+    "colombian-league": "America/Bogota",
+    "apbn": "America/Managua",
+    "npb": "Asia/Tokyo",
+    "kbo": "Asia/Seoul",
+    "cpbl": "Asia/Taipei",
+    "cpb": "Asia/Shanghai",
+    "abl": "Australia/Sydney",
+    "hoofdklasse": "Europe/Amsterdam",
+    "dbl": "Europe/Berlin",
+    "serie-a": "Europe/Rome",
+    "extraliga": "Europe/Prague",
+    "czech-extraliga": "Europe/Prague",
+    "french-d1": "Europe/Paris",
+    "division-de-honor": "Europe/Madrid",
+    "belgian-d1": "Europe/Brussels",
+    "austrian-bundesliga": "Europe/Vienna",
+    "swiss-nla": "Europe/Zurich",
+    "elitserien": "Europe/Stockholm",
+    "nbl": "Europe/London",
+    "international": "Europe/Amsterdam"
   },
-  "fallback_article_age_hours": 48
+  "prime_min_score": 25,
+  "min_hours_between_regular_posts": 3
 }
