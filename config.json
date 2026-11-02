@@ -201,12 +201,11 @@
     "rotation_days": 7,
     "rotation_penalty": -3
   },
-  "reserve_last_slot_until": "15:00",
+  "reserve_last_slot_until": "00:00",
   "breaking_score": 80,
   "post_to_facebook": true,
-  "min_posts_per_day": 3,
+  "min_posts_per_day": 5,
   "fallback_article_age_hours": 48,
-  "catch_up_from": "21:00",
   "prime_time_bonus": 8,
   "local_active": [
     "07:00",
@@ -272,6 +271,5 @@
     "nbl": "Europe/London",
     "international": "Europe/Amsterdam"
   },
-  "prime_min_score": 25,
-  "min_hours_between_regular_posts": 3
+  "window_late_minutes": 90
 }

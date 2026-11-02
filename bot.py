@@ -288,9 +288,8 @@ def pick_next(state: dict) -> dict | None:
     done = len(posted_today(state))
     minimum = CFG["min_posts_per_day"]
     now_hm = datetime.now(TZ).strftime("%H:%M")
-    catch_up = done < minimum and now_hm >= CFG["catch_up_from"]
     ranking = ranked(state)
-    if catch_up and not ranking:  # nothing fresh: widen the window so the minimum can still be met
+    if not ranking:  # nothing fresh: widen the window so the minimum can still be met
         ranking = ranked(state, CFG.get("fallback_article_age_hours", 48))
     for c in ranking:
         c["local"], c["active"], c["prime"] = local_timing(c["url"])
@@ -314,22 +313,27 @@ def pick_next(state: dict) -> dict | None:
     force = os.environ.get("FORCE_POST") == "true"
     active = [c for c in ranking if c["active"]]
     must = [c for c in active if c["score"] >= CFG["must_post_score"]]
-    prime = [c for c in active if c["prime"] and c["score"] >= CFG["prime_min_score"]]
-    real = [p for p in state["posted"] if p.get("posted_at") and not p.get("seeded")]
-    hours_since = ((datetime.now(TZ) - max(datetime.fromisoformat(p["posted_at"]) for p in real)).total_seconds() / 3600
-                   if real else 99)
-    spaced = hours_since >= CFG["min_hours_between_regular_posts"]
+    prime = [c for c in active if c["prime"]]
+    # Spread the daily target evenly: the day is split into N equal windows, one post due per window.
+    n = CFG["min_posts_per_day"]
+    now = datetime.now(TZ)
+    mins = now.hour * 60 + now.minute
+    win = 1440 / n
+    idx = int(mins // win)
+    late = (mins % win) >= win - CFG["window_late_minutes"]
     last_slot = done == CFG["max_posts_per_day"] - 1
     if force:
         top, why = ranking[0], "manual run with force"
     elif must:
         top, why = must[0], f"must-post (score >= {CFG['must_post_score']}), daytime for its fans"
-    elif done < minimum and prime and spaced:
-        top, why = prime[0], f"prime time for its fans, {done}/{minimum} minimum posted"
-    elif catch_up:
-        top, why = (active or ranking)[0], f"catch-up after {CFG['catch_up_from']}: {done}/{minimum} minimum posted"
+    elif done < idx:
+        top, why = (prime or active or ranking)[0], f"behind schedule ({done} posted, {idx} due by now)"
+    elif done < idx + 1 and prime:
+        top, why = prime[0], f"window {idx + 1}/{n}: prime time for its fans"
+    elif done < idx + 1 and late:
+        top, why = (active or ranking)[0], f"window {idx + 1}/{n} closing: best available story"
     else:
-        log(f"Nothing to post now ({done} posted; minimum {minimum} reached or no league in prime time).")
+        log(f"Nothing to post now ({done} posted, window {idx + 1}/{n} already covered or waiting for prime time).")
         return None
     if last_slot and not force and now_hm < CFG["reserve_last_slot_until"] and top["score"] < CFG["breaking_score"]:
         log(f"Last slot kept free until {CFG['reserve_last_slot_until']} for breaking news (best now {top['score']}).")
