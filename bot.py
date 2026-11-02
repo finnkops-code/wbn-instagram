@@ -692,8 +692,10 @@ def find_user_tags(headline: str, context: str = "") -> list[str]:
                 "access_token": token}, timeout=30).json()
             bd = r.get("business_discovery")
             if not bd:
+                print(f"::notice title=Tag lookup::{name}: @{handle} not found ({str(r.get('error', {}).get('message', ''))[:120]})", flush=True)
                 continue
             disp = re.sub(r"[^a-z]", "", (bd.get("name") or "").lower())
+            print(f"::notice title=Tag lookup::{name}: @{bd['username']} name={bd.get('name')} followers={bd.get('followers_count')}", flush=True)
             if name in known or (base and base in disp and bd.get("followers_count", 0) >= CFG["tag_min_followers"]):
                 log(f"  tag @{bd['username']} for {name} ({bd.get('followers_count')} followers)")
                 tags.append(bd["username"])
@@ -1041,7 +1043,9 @@ def cmd_tags(headline: str):
         headline, ctx = m["headline"], f"{m.get('image_alt') or ''} {m.get('description') or ''}"
     log(f"Headline: {headline}")
     log(f"Names found: {player_names(headline, ctx)}")
-    log(f"Verified tags: {find_user_tags(headline, ctx)}")
+    tags = find_user_tags(headline, ctx)
+    log(f"Verified tags: {tags}")
+    print(f"::notice title=Tags::{headline} | names={player_names(headline, ctx)} | tags={tags}", flush=True)
 
 
 def cmd_check():
