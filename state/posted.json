@@ -70,6 +70,18 @@
       "facebook_post_id": "924847174034802_122148921843132879",
       "collaborators": null,
       "posted_at": "2026-11-02T08:46:16+01:00"
+    },
+    {
+      "url": "https://worldbaseballnews.org/news/mlb/2026-mlb-gold-glove-winners/",
+      "headline": "2026 MLB Gold Glove Winners: Full List of All 20 Honorees",
+      "slot": "manual",
+      "image": "posts/2026-mlb-gold-glove-winners.jpg",
+      "media_id": "18354596251268801",
+      "facebook_post_id": "924847174034802_122148978819132879",
+      "collaborators": [
+        "worldbaseballhq"
+      ],
+      "posted_at": "2026-11-02T16:12:38+01:00"
     }
   ]
 }
