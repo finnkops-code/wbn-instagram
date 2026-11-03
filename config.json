@@ -273,5 +273,6 @@
   },
   "window_late_minutes": 90,
   "tag_players": false,
-  "tag_min_followers": 20000
+  "tag_min_followers": 20000,
+  "hard_max_posts_per_day": 8
 }

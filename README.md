@@ -19,7 +19,7 @@ Elk uur (rond :23) leest de bot de RSS-feed van de site (alle artikelen van de a
 - De dag (NL) is verdeeld in 5 blokken van ~4u48m; per blok moet er één post live.
 - Binnen een blok gaat het beste artikel live waarvan de fans op dat moment in hun prime time zitten (07:00–09:30, 12:00–14:00, 18:00–22:30 lokaal, +8 punten).
 - Is er in het laatste 1,5 uur van een blok nog niets gepost, dan gaat het beste beschikbare artikel live. Loopt de dag achter, dan wordt meteen ingehaald.
-- Groot nieuws (score ≥ 60) gaat los daarvan direct live zodra het overdag is bij die fans. Max 5 per dag, minstens 1 uur ertussen.
+- Groot nieuws (score ≥ 60) gaat los daarvan direct live zodra het overdag is bij die fans. Richtlijn 5 per dag; daarboven alleen breaking news (score ≥ 80), met een harde grens van 8. Minstens 1 uur ertussen.
 - De bot kijkt elk halfuur (GitHub start niet elke geplande run; zie `apps-script/trigger.gs` voor een stipte klok).
 
 Elke run zet de volledige ranking met uitleg in de samenvatting van de GitHub Action, zodat je precies ziet waarom iets wel of niet gekozen is. Lokaal: `python bot.py rank`. Alle punten, woorden en tijden staan in `config.json` en zijn aan te passen.

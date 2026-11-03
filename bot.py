@@ -297,7 +297,7 @@ def article_meta(url: str) -> dict:
 def can_post_now(state: dict) -> tuple[bool, str]:
     now = datetime.now(TZ)
     today = posted_today(state)
-    if len(today) >= CFG["max_posts_per_day"]:
+    if len(today) >= CFG["hard_max_posts_per_day"]:
         return False, f"daily limit reached ({len(today)}/{CFG['max_posts_per_day']})"
     real = [p for p in state["posted"] if p.get("posted_at") and not p.get("seeded")]
     if real:
@@ -361,6 +361,17 @@ def pick_next(state: dict) -> dict | None:
     idx = int(mins // win)
     late = (mins % win) >= win - CFG["window_late_minutes"]
     last_slot = done == CFG["max_posts_per_day"] - 1
+    breaking = [c for c in active if c["score"] >= CFG["breaking_score"]]
+    if done >= CFG["max_posts_per_day"] and not force:
+        if breaking:
+            top, why = breaking[0], f"breaking news (score >= {CFG['breaking_score']}) on top of the daily {CFG['max_posts_per_day']}"
+            log(f"Posting: {why} → [{top['score']}] {top['home_title']}")
+            m = article_meta(top["url"])
+            m["image"] = m["image"] or top["feed_image"]
+            m["description"] = m["description"] or top["feed_description"]
+            return {**top, **m, "slot": f"score {top['score']}"}
+        log(f"Daily target of {CFG['max_posts_per_day']} reached; only breaking news (>= {CFG['breaking_score']}) goes out now.")
+        return None
     if force:
         top, why = ranking[0], "manual run with force"
     elif must:
