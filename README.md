@@ -4,7 +4,7 @@ Post automatisch de grootste headlines van worldbaseballnews.org op Instagram: e
 
 ## Hoe het werkt
 
-Elk uur (rond :23) leest de bot de RSS-feed van de site (alle artikelen van de afgelopen 20 uur, niet alleen de hero) en geeft elk artikel een **nieuwswaarde-score van 0–100**:
+Elk uur (rond :23) leest de bot de RSS-feed van de site (alle artikelen van de afgelopen 3 dagen, niet alleen de hero) en geeft elk artikel een **nieuwswaarde-score van 0–100**:
 
 | Onderdeel | Punten |
 |---|---|

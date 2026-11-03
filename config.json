@@ -3,7 +3,7 @@
   "timezone": "Europe/Amsterdam",
   "max_posts_per_day": 5,
   "min_minutes_between_posts": 60,
-  "max_article_age_hours": 20,
+  "max_article_age_hours": 72,
   "title_max_chars": 70,
   "graph_api_version": "v23.0",
   "image_base_url": "https://raw.githubusercontent.com/finnkops-code/wbn-instagram/main/posts/",
@@ -205,7 +205,7 @@
   "breaking_score": 80,
   "post_to_facebook": true,
   "min_posts_per_day": 5,
-  "fallback_article_age_hours": 48,
+  "fallback_article_age_hours": 72,
   "prime_time_bonus": 8,
   "local_active": [
     "07:00",
