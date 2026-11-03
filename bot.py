@@ -105,7 +105,7 @@ def gh_output(key: str, value: str):
 
 
 # ----------------------------------------------------------------------------- 1. candidates
-def feed_candidates() -> list[dict]:
+def rss_candidates() -> list[dict]:
     """All articles from the site's RSS feed (newest ~20), with league, date, description and image."""
     soup = BeautifulSoup(get(CFG["site_url"] + "feed/").content, "xml")
     out = []
@@ -123,6 +123,45 @@ def feed_candidates() -> list[dict]:
             "feed_image": enc["url"] if enc and enc.get("url") else None,
         })
     return out
+
+
+def api_candidates(hours: int) -> list[dict]:
+    """WordPress REST API: every article of the last `hours` (the RSS feed only holds the newest 20)."""
+    after = (datetime.now(timezone.utc) - timedelta(hours=hours)).strftime("%Y-%m-%dT%H:%M:%S")
+    out, page = [], 1
+    while page <= 5:
+        r = requests.get(CFG["site_url"] + "wp-json/wp/v2/posts", headers=UA, timeout=30, params={
+            "per_page": 50, "page": page, "after": after, "_embed": "wp:featuredmedia,wp:term"})
+        if r.status_code != 200 or not r.headers.get("content-type", "").startswith("application/json"):
+            break
+        items = r.json()
+        for it in items:
+            emb = it.get("_embedded", {})
+            media = (emb.get("wp:featuredmedia") or [{}])[0]
+            cats = [t["name"] for grp in emb.get("wp:term", []) for t in grp if t.get("taxonomy") == "category"]
+            out.append({
+                "url": norm_url(it["link"]),
+                "home_title": BeautifulSoup(it["title"]["rendered"], "html.parser").get_text(" ", strip=True),
+                "feed_description": BeautifulSoup(it.get("excerpt", {}).get("rendered", ""), "html.parser").get_text(" ", strip=True),
+                "league_label": cats[0] if cats else None, "categories": cats,
+                "pub_dt": datetime.fromisoformat(it["date_gmt"]).replace(tzinfo=timezone.utc),
+                "feed_image": media.get("source_url"),
+            })
+        if len(items) < 50:
+            break
+        page += 1
+    return out
+
+
+def feed_candidates() -> list[dict]:
+    """RSS feed plus the REST API, so articles up to max_article_age_hours old are always available."""
+    items = {c["url"]: c for c in rss_candidates()}
+    try:
+        for c in api_candidates(int(max(CFG["max_article_age_hours"], CFG.get("fallback_article_age_hours", 0)))):
+            items.setdefault(c["url"], c)
+    except Exception as e:
+        log(f"  REST API not available ({e}); using RSS only")
+    return list(items.values())
 
 
 def most_read_urls() -> set[str]:
