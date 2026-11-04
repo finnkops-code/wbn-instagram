@@ -98,6 +98,16 @@
     "milb": [
       "#MiLB",
       "#MinorLeagueBaseball"
+    ],
+    "swiss-national-league-a": [
+      "#SwissBaseball",
+      "#NLA",
+      "#BaseballSchweiz"
+    ],
+    "swiss-nla": [
+      "#SwissBaseball",
+      "#NLA",
+      "#BaseballSchweiz"
     ]
   },
   "league_labels": {
@@ -118,7 +128,9 @@
     "extraliga": "EXTRALIGA",
     "czech-extraliga": "EXTRALIGA",
     "french-d1": "FRENCH D1",
-    "international": "INTERNATIONAL"
+    "international": "INTERNATIONAL",
+    "swiss-national-league-a": "SWISS NLA",
+    "swiss-nla": "SWISS NLA"
   },
   "must_post_score": 60,
   "scoring": {
@@ -269,7 +281,8 @@
     "swiss-nla": "Europe/Zurich",
     "elitserien": "Europe/Stockholm",
     "nbl": "Europe/London",
-    "international": "Europe/Amsterdam"
+    "international": "Europe/Amsterdam",
+    "swiss-national-league-a": "Europe/Zurich"
   },
   "window_late_minutes": 90,
   "tag_players": false,

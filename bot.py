@@ -610,6 +610,7 @@ def render_list_slide(slide: dict, out_path: Path):
 
 # ----------------------------------------------------------------------------- 4. caption
 EMOJI_RULES = [
+    (r"\b(partnership|partners? with|teams up)\b", "🤝"),
     (r"\b(wins?|won|champions?|crowned|title|clinch\w*|MVP|sweep\w*)\b", "🏆"),
     (r"\b(no-hitter|perfect game|shutout|one-hit\w*|strikeouts?|K's)\b", "🔥"),
     (r"\b(homers?|home runs?|grand slam|walk-off|slugs?)\b", "💥"),
