@@ -180,6 +180,19 @@
       "tags": null,
       "collaborators": null,
       "posted_at": "2026-11-04T05:38:52+01:00"
+    },
+    {
+      "url": "https://worldbaseballnews.org/news/swiss-national-league-a/world-baseball-news-swiss-baseball-federation-partnership/",
+      "headline": "World Baseball News and Swiss Baseball Federation Announce Media Partnership",
+      "slot": "manual",
+      "image": "posts/world-baseball-news-swiss-baseball-federation-partnership.jpg",
+      "media_id": "18100370552423520",
+      "facebook_post_id": "924847174034802_122149137573132879",
+      "tags": null,
+      "collaborators": [
+        "sbsf_swiss_baseball_softball"
+      ],
+      "posted_at": "2026-11-04T09:32:27+01:00"
     }
   ]
 }
