@@ -178,7 +178,9 @@ def draw_flags(canvas, draw, x, cy, codes, h=34) -> int:
 
 def league_tile(canvas, draw, lg, x, y, size):
     """League logo on a white rounded tile (logos are made for light backgrounds)."""
-    draw.rounded_rectangle([x, y, x + size, y + size], radius=size // 7, fill=WHITE)
+    tile = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    ImageDraw.Draw(tile).rounded_rectangle([x, y, x + size, y + size], radius=size // 7, fill=WHITE + (128,))
+    canvas.alpha_composite(tile)
     f = LEAGUE_LOGOS / f"{lg['key']}.png"
     if f.exists():
         im = Image.open(f).convert("RGBA")
@@ -206,7 +208,6 @@ def fit_title_block(draw, text, width):
 
 def draw_league_header(canvas, draw, lg, now, part=""):
     tile = 176
-    league_tile(canvas, draw, lg, MARGIN, 62, tile)
     x0 = MARGIN + tile + 34
     x = draw_chevrons(draw, x0, 76, RED_BRIGHT, n=3)
     f_chip = font("figtree-800", 26)
@@ -227,7 +228,11 @@ def draw_league_header(canvas, draw, lg, now, part=""):
     cy = max(bottom + 38, 212)
     fx = draw_flags(canvas, draw, x0, cy, lg.get("flags"))
     draw.text((fx + 4, cy), (lg.get("country") or "").upper(), font=font("figtree-800", 26), fill=ON_DARK, anchor="lm")
-    return max(62 + tile, cy + 20) + 34
+    # logo tile centred on the text block (chip line top -> country line bottom)
+    block_top, block_bottom = 64, cy + 18
+    tile_y = int((block_top + block_bottom) / 2 - tile / 2)
+    league_tile(canvas, draw, lg, MARGIN, tile_y, tile)
+    return max(tile_y + tile, block_bottom) + 34
 
 
 COLS = [("W", 70), ("L", 70), ("PCT", 108), ("GB", 86), ("L10", 96), ("STRK", 96)]
