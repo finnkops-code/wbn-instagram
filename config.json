@@ -287,5 +287,258 @@
   "window_late_minutes": 90,
   "tag_players": false,
   "tag_min_followers": 20000,
-  "hard_max_posts_per_day": 8
+  "hard_max_posts_per_day": 8,
+  "standings": {
+    "post_weekday": 0,
+    "post_after": "17:00",
+    "cover_cta": "FULL STANDINGS · LINK IN BIO",
+    "leagues": [
+      {
+        "key": "mlb",
+        "label": "MLB",
+        "name": "Major League Baseball",
+        "slug": "major-league-baseball"
+      },
+      {
+        "key": "lmb",
+        "label": "LMB",
+        "name": "Liga Mexicana de Béisbol",
+        "slug": "liga-mexicana-de-beisbol"
+      },
+      {
+        "key": "lidom",
+        "label": "LIDOM",
+        "name": "Dominican Professional Baseball League",
+        "slug": "liga-de-beisbol-profesional-de-la-republica-dominicana"
+      },
+      {
+        "key": "lmp",
+        "label": "LMP",
+        "name": "Liga Mexicana del Pacífico",
+        "slug": "liga-mexicana-del-pacifico"
+      },
+      {
+        "key": "lvbp",
+        "label": "LVBP",
+        "name": "Liga Venezolana de Béisbol Profesional",
+        "slug": "liga-venezolana-de-beisbol-profesional"
+      },
+      {
+        "key": "lbprc",
+        "label": "LBPRC",
+        "name": "Liga de Béisbol Profesional Roberto Clemente",
+        "slug": "liga-de-beisbol-profesional-roberto-clemente"
+      },
+      {
+        "key": "afl",
+        "label": "AFL",
+        "name": "Arizona Fall League",
+        "slug": "arizona-fall-league"
+      },
+      {
+        "key": "lpb",
+        "label": "Colombian League",
+        "name": "Liga Profesional de Béisbol de Colombia",
+        "slug": "liga-profesional-de-beisbol-colombia"
+      },
+      {
+        "key": "il",
+        "label": "International League",
+        "name": "International League",
+        "slug": "international-league"
+      },
+      {
+        "key": "pcl",
+        "label": "PCL",
+        "name": "Pacific Coast League",
+        "slug": "pacific-coast-league"
+      },
+      {
+        "key": "eastern",
+        "label": "Eastern League",
+        "name": "Eastern League",
+        "slug": "eastern-league"
+      },
+      {
+        "key": "southern",
+        "label": "Southern League",
+        "name": "Southern League",
+        "slug": "southern-league"
+      },
+      {
+        "key": "texas",
+        "label": "Texas League",
+        "name": "Texas League",
+        "slug": "texas-league"
+      },
+      {
+        "key": "sally",
+        "label": "South Atlantic League",
+        "name": "South Atlantic League",
+        "slug": "south-atlantic-league"
+      },
+      {
+        "key": "midwest",
+        "label": "Midwest League",
+        "name": "Midwest League",
+        "slug": "midwest-league"
+      },
+      {
+        "key": "northwest",
+        "label": "Northwest League",
+        "name": "Northwest League",
+        "slug": "northwest-league"
+      },
+      {
+        "key": "carolina",
+        "label": "Carolina League",
+        "name": "Carolina League",
+        "slug": "carolina-league"
+      },
+      {
+        "key": "fsl",
+        "label": "Florida State League",
+        "name": "Florida State League",
+        "slug": "florida-state-league"
+      },
+      {
+        "key": "california",
+        "label": "California League",
+        "name": "California League",
+        "slug": "california-league"
+      },
+      {
+        "key": "atlantic",
+        "label": "Atlantic League",
+        "name": "Atlantic League of Professional Baseball",
+        "slug": "atlantic-league"
+      },
+      {
+        "key": "aapb",
+        "label": "American Association",
+        "name": "American Association of Professional Baseball",
+        "slug": "american-association"
+      },
+      {
+        "key": "frontier",
+        "label": "Frontier League",
+        "name": "Frontier League",
+        "slug": "frontier-league"
+      },
+      {
+        "key": "cbl",
+        "label": "CBL",
+        "name": "Canadian Baseball League",
+        "slug": "canadian-baseball-league"
+      },
+      {
+        "key": "apbn",
+        "label": "Nicaraguan League",
+        "name": "Nicaraguan Professional Baseball League",
+        "slug": "nicaraguan-professional-baseball-league"
+      },
+      {
+        "key": "hoofdklasse",
+        "label": "Hoofdklasse",
+        "name": "Hoofdklasse Honkbal",
+        "slug": "hoofdklasse-honkbal"
+      },
+      {
+        "key": "dbl",
+        "label": "DBL",
+        "name": "Deutsche Baseball Liga",
+        "slug": "deutsche-baseball-liga"
+      },
+      {
+        "key": "seriea",
+        "label": "Serie A",
+        "name": "Serie A Gold Baseball",
+        "slug": "serie-a-gold-baseball"
+      },
+      {
+        "key": "extraliga",
+        "label": "Extraliga",
+        "name": "Czech Extraliga",
+        "slug": "czech-extraliga"
+      },
+      {
+        "key": "d1",
+        "label": "French D1",
+        "name": "French Division 1",
+        "slug": "french-division-1"
+      },
+      {
+        "key": "dhb",
+        "label": "División de Honor",
+        "name": "División de Honor de Béisbol",
+        "slug": "division-de-honor-baseball"
+      },
+      {
+        "key": "belgium",
+        "label": "Belgian D1",
+        "name": "Belgian Baseball D1",
+        "slug": "belgian-baseball-d1"
+      },
+      {
+        "key": "austria",
+        "label": "Austrian Bundesliga",
+        "name": "Austrian Baseball Bundesliga",
+        "slug": "austrian-baseball-bundesliga"
+      },
+      {
+        "key": "nla",
+        "label": "Swiss NLA",
+        "name": "Swiss National League A",
+        "slug": "swiss-nla-baseball"
+      },
+      {
+        "key": "elitserien",
+        "label": "Elitserien",
+        "name": "Elitserien Baseboll",
+        "slug": "elitserien-baseboll"
+      },
+      {
+        "key": "nbl",
+        "label": "NBL",
+        "name": "National Baseball League (Great Britain)",
+        "slug": "british-national-baseball-league"
+      },
+      {
+        "key": "npb",
+        "label": "NPB",
+        "name": "Nippon Professional Baseball",
+        "slug": "nippon-professional-baseball"
+      },
+      {
+        "key": "npbfarm",
+        "label": "NPB Farm",
+        "name": "NPB Farm League",
+        "slug": "npb-farm-league"
+      },
+      {
+        "key": "cpbl",
+        "label": "CPBL",
+        "name": "Chinese Professional Baseball League",
+        "slug": "chinese-professional-baseball-league"
+      },
+      {
+        "key": "cpb",
+        "label": "CPB",
+        "name": "Chinese Professional Baseball",
+        "slug": "chinese-professional-baseball"
+      },
+      {
+        "key": "kbo",
+        "label": "KBO",
+        "name": "Korea Baseball Organization",
+        "slug": "korean-baseball-organization"
+      },
+      {
+        "key": "abl",
+        "label": "ABL",
+        "name": "Australian Baseball League",
+        "slug": "australian-baseball-league"
+      }
+    ]
+  }
 }

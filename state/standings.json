@@ -1,0 +1,170 @@
+{
+ "leagues": {
+  "mlb": {
+   "games": 4858,
+   "season": "2026"
+  },
+  "lmb": {
+   "games": 1850,
+   "season": "2026"
+  },
+  "lidom": {
+   "games": 0,
+   "season": "2026"
+  },
+  "lmp": {
+   "games": 0,
+   "season": "2026"
+  },
+  "lvbp": {
+   "games": 0,
+   "season": "2026"
+  },
+  "lbprc": {
+   "games": 0,
+   "season": "2026"
+  },
+  "afl": {
+   "games": 0,
+   "season": "2026"
+  },
+  "lpb": {
+   "games": 120,
+   "season": "2025"
+  },
+  "il": {
+   "games": 2954,
+   "season": "2026"
+  },
+  "pcl": {
+   "games": 1490,
+   "season": "2026"
+  },
+  "eastern": {
+   "games": 1634,
+   "season": "2026"
+  },
+  "southern": {
+   "games": 1090,
+   "season": "2026"
+  },
+  "texas": {
+   "games": 1372,
+   "season": "2026"
+  },
+  "sally": {
+   "games": 1564,
+   "season": "2026"
+  },
+  "midwest": {
+   "games": 1550,
+   "season": "2026"
+  },
+  "northwest": {
+   "games": 790,
+   "season": "2026"
+  },
+  "carolina": {
+   "games": 1564,
+   "season": "2026"
+  },
+  "fsl": {
+   "games": 1290,
+   "season": "2026"
+  },
+  "california": {
+   "games": 1054,
+   "season": "2026"
+  },
+  "atlantic": {
+   "games": 1260,
+   "season": "2026"
+  },
+  "aapb": {
+   "games": 1198,
+   "season": "2026"
+  },
+  "frontier": {
+   "games": 1826,
+   "season": "2026"
+  },
+  "cbl": {
+   "games": 430,
+   "season": "2026"
+  },
+  "apbn": {
+   "games": 0,
+   "season": "2026"
+  },
+  "hoofdklasse": {
+   "games": 250,
+   "season": "2026"
+  },
+  "dbl": {
+   "games": 240,
+   "season": "2026"
+  },
+  "seriea": {
+   "games": 260,
+   "season": "2026"
+  },
+  "extraliga": {
+   "games": 280,
+   "season": "2026"
+  },
+  "d1": {
+   "games": 224,
+   "season": "2026"
+  },
+  "dhb": {
+   "games": 272,
+   "season": "2026"
+  },
+  "belgium": {
+   "games": 224,
+   "season": "2026"
+  },
+  "austria": {
+   "games": 168,
+   "season": "2026"
+  },
+  "nla": {
+   "games": 60,
+   "season": "2026"
+  },
+  "elitserien": {
+   "games": 100,
+   "season": "2026"
+  },
+  "nbl": {
+   "games": 208,
+   "season": "2026"
+  },
+  "npb": {
+   "games": 1684,
+   "season": "2026"
+  },
+  "npbfarm": {
+   "games": 1586,
+   "season": "2026"
+  },
+  "cpbl": {
+   "games": 1428,
+   "season": "2026"
+  },
+  "cpb": {
+   "games": 88,
+   "season": "2026"
+  },
+  "kbo": {
+   "games": 1406,
+   "season": "2026"
+  },
+  "abl": {
+   "games": 154,
+   "season": "2025"
+  }
+ },
+ "posts": [],
+ "note": "Seeded 2026-11-07: leagues with regular-season games in the past week start at 0."
+}
