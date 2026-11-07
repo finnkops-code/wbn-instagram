@@ -409,3 +409,52 @@ def prepare(out_dir: Path, now: datetime | None = None) -> dict | None:
     return {"files": files, "items": items, "caption": build_caption(items, now),
             "caption_facebook": build_caption(items, now, "facebook"),
             "snapshot": new_snap}
+
+
+# ----------------------------------------------------------------------------- posting
+def due(now: datetime | None = None) -> bool:
+    """Monday after post_after (NL time) and no standings carousel posted yet this ISO week."""
+    now = now or datetime.now(TZ)
+    if now.weekday() != SCFG["post_weekday"] or now.strftime("%H:%M") < SCFG["post_after"]:
+        return False
+    week = now.isocalendar()[:2]
+    for p in load_snap().get("posts", []):
+        if tuple(datetime.fromisoformat(p["posted_at"]).astimezone(TZ).isocalendar()[:2]) == tuple(week):
+            return False
+    return True
+
+
+def cmd_prepare(force: bool = False) -> bool:
+    import os
+    if not force and not due():
+        return False
+    now = datetime.now(TZ)
+    res = prepare(bot.POSTS_DIR, now)
+    if not res:
+        bot.gh_output("has_post", "false")
+        return False
+    collabs = [c.strip().lstrip("@") for c in os.environ.get("COLLABORATORS", "").split(",") if c.strip()]
+    collabs = collabs or SCFG.get("collaborators", [])
+    first, extra = res["files"][0], res["files"][1:]
+    pending = {
+        "url": f"standings:{now.strftime('%Y-%m-%d')}", "slot": "standings",
+        "headline": f"Weekly standings {now.strftime('%b %-d, %Y')}: " + ", ".join(lg["label"] for lg, _ in res["items"]),
+        "title_on_image": "WEEKLY STANDINGS", "image_file": str(first.relative_to(ROOT)),
+        "image_url": CFG["image_base_url"] + first.name, "extra_images": [f.name for f in extra],
+        "caption": res["caption"], "caption_facebook": res["caption_facebook"], "tag_context": "",
+        "collaborators": collabs, "standings_snapshot": res["snapshot"],
+    }
+    bot.PENDING_FILE.write_text(json.dumps(pending, indent=2, ensure_ascii=False), encoding="utf-8")
+    log(f"Prepared standings carousel: {len(res['files'])} slides, collaborators={collabs}")
+    print(f"::notice title=Standings::{pending['headline']}", flush=True)
+    bot.gh_output("has_post", "true")
+    return True
+
+
+def save_after_post(snapshot: dict, media_id: str):
+    snap = load_snap()
+    snap["leagues"].update(snapshot)
+    snap.setdefault("posts", []).append({"posted_at": datetime.now(TZ).isoformat(timespec="seconds"),
+                                         "media_id": media_id, "leagues": sorted(snapshot)})
+    snap.pop("note", None)
+    SNAP_FILE.write_text(json.dumps(snap, indent=1, ensure_ascii=False), encoding="utf-8")

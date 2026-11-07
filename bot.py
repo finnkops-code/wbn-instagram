@@ -244,6 +244,7 @@ def score(c: dict, posted_today: list[dict], popular: set[str], recent: list[dic
 def posted_today(state: dict) -> list[dict]:
     today = datetime.now(TZ).date()
     return [p for p in state["posted"] if p.get("posted_at") and not p.get("seeded")
+            and p.get("slot") != "standings"  # weekly standings carousel doesn't count toward the 5 news posts
             and datetime.fromisoformat(p["posted_at"]).astimezone(TZ).date() == today]
 
 
@@ -891,6 +892,14 @@ def cmd_prepare():
         gh_output("has_post", "false")
         return
     state = load_state()
+    try:
+        import standings
+        if standings.due():
+            log("Weekly standings carousel is due.")
+            if standings.cmd_prepare():
+                return
+    except Exception as e:
+        print(f"::error title=Standings prepare failed::{str(e)[:900]}", flush=True)
     ok, why = can_post_now(state)
     log(f"Status: {why}")
     if not ok:
@@ -984,6 +993,9 @@ def cmd_publish():
         "posted_at": datetime.now(TZ).isoformat(timespec="seconds"),
     })
     save_state(state)
+    if p.get("standings_snapshot") is not None:
+        import standings
+        standings.save_after_post(p["standings_snapshot"], media_id)
     PENDING_FILE.unlink()
     log(f"Published {media_id}: {p['headline']}")
     # Instagram keeps its own copy after publishing, so old visuals can go (keeps the repo small)
@@ -1144,5 +1156,6 @@ if __name__ == "__main__":
     {"prepare": cmd_prepare, "publish": cmd_publish, "seed": cmd_seed, "refresh-token": cmd_refresh_token,
      "rank": cmd_rank, "check": cmd_check, "tags": lambda: cmd_tags(sys.argv[2]),
      "prepare-url": lambda: cmd_prepare_url(sys.argv[2]),
+     "prepare-standings": lambda: __import__("standings").cmd_prepare(force=True),
      "facebook-only": lambda: cmd_facebook_only(sys.argv[2]),
      "preview": lambda: cmd_preview(sys.argv[2:])}.get(cmd, lambda: sys.exit(__doc__))()

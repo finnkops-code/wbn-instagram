@@ -23,6 +23,10 @@ on:
         description: "Optional: slides JSON in the repo (e.g. slides/xyz.json) to make a carousel"
         type: string
         default: ""
+      standings:
+        description: "Post the weekly standings carousel now (active leagues only)"
+        type: boolean
+        default: false
       force:
         description: "Post the best available story now, ignoring score thresholds and time windows (daily max still applies)"
         type: boolean
@@ -58,8 +62,10 @@ jobs:
           ARTICLE_URL: ${{ inputs.url }}
           COLLABORATORS: ${{ inputs.collaborators }}
           SLIDES: ${{ inputs.slides }}
+          STANDINGS: ${{ inputs.standings == true }}
         run: |
-          if [ -n "$ARTICLE_URL" ]; then python bot.py prepare-url "$ARTICLE_URL"; else python bot.py prepare; fi
+          if [ "$STANDINGS" = "true" ]; then python bot.py prepare-standings
+          elif [ -n "$ARTICLE_URL" ]; then python bot.py prepare-url "$ARTICLE_URL"; else python bot.py prepare; fi
 
       - name: Upload visual (Instagram fetches it from the public raw URL)
         id: upload
