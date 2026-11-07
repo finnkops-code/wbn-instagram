@@ -150,6 +150,86 @@ def week_label(now: datetime) -> str:
     return now.strftime("%b %-d, %Y").upper()
 
 
+FLAGS = ROOT / "flags"
+LEAGUE_LOGOS = ROOT / "league-logos"
+
+
+def flag_img(code: str, h: int) -> Image.Image | None:
+    f = FLAGS / f"{code}.png"
+    if not f.exists():
+        return None
+    im = Image.open(f).convert("RGBA").resize((round(h * 4 / 3), h), Image.LANCZOS)
+    mask = Image.new("L", im.size, 0)
+    ImageDraw.Draw(mask).rounded_rectangle([0, 0, im.width - 1, im.height - 1], radius=max(3, h // 8), fill=255)
+    im.putalpha(mask)
+    return im
+
+
+def draw_flags(canvas, draw, x, cy, codes, h=34) -> int:
+    for c in codes or []:
+        im = flag_img(c, h)
+        if im:
+            draw.rounded_rectangle([x - 2, cy - h / 2 - 2, x + im.width + 1, cy + h / 2 + 1], radius=max(3, h // 8) + 1,
+                                   fill=PETROL_LINE)
+            canvas.alpha_composite(im, (int(x), int(cy - h / 2)))
+            x += im.width + 10
+    return x
+
+
+def league_tile(canvas, draw, lg, x, y, size):
+    """League logo on a white rounded tile (logos are made for light backgrounds)."""
+    draw.rounded_rectangle([x, y, x + size, y + size], radius=size // 7, fill=WHITE)
+    f = LEAGUE_LOGOS / f"{lg['key']}.png"
+    if f.exists():
+        im = Image.open(f).convert("RGBA")
+        pad = int(size * 0.12)
+        im.thumbnail((size - 2 * pad, size - 2 * pad), Image.LANCZOS)
+        canvas.alpha_composite(im, (int(x + (size - im.width) / 2), int(y + (size - im.height) / 2)))
+    else:
+        fl = fit_text(draw, lg["label"].upper(), "oswald-700", int(size * 0.34), 14, size - 16)
+        draw.text((x + size / 2, y + size / 2), lg["label"].upper(), font=fl, fill=PETROL_DEEP, anchor="mm")
+
+
+def fit_title_block(draw, text, width):
+    """League name: one line if it fits at a decent size, otherwise two balanced lines."""
+    for size in range(76, 55, -2):
+        f = font("oswald-700", size)
+        if draw.textlength(text, font=f) <= width:
+            return f, [text]
+    for size in range(60, 37, -2):
+        f = font("oswald-700", size)
+        lines = bot.wrap(draw, text, f, width)
+        if len(lines) <= 2 and all(draw.textlength(l, font=f) <= width for l in lines):
+            return f, lines
+    return font("oswald-700", 38), [text]
+
+
+def draw_league_header(canvas, draw, lg, now, part=""):
+    tile = 176
+    league_tile(canvas, draw, lg, MARGIN, 62, tile)
+    x0 = MARGIN + tile + 34
+    x = draw_chevrons(draw, x0, 76, RED_BRIGHT, n=3)
+    f_chip = font("figtree-800", 26)
+    label = lg["label"].upper()
+    lw = draw.textlength(label, font=f_chip)
+    draw.rounded_rectangle([x + 6, 64, x + 6 + lw + 28, 106], radius=8, fill=RED)
+    draw.text((x + 20, 85), label, font=f_chip, fill=WHITE, anchor="lm")
+    draw.text((x + 6 + lw + 28 + 16, 85), f"STANDINGS · {week_label(now)}", font=font("figtree-700", 24),
+              fill=ON_DARK_2, anchor="lm")
+    title = (lg["name"] + (f" · {part}" if part else "")).upper()
+    f_title, lines = fit_title_block(draw, title, W - MARGIN - x0)
+    lh = int(f_title.size * 1.06)
+    ty = 120
+    bottom = ty
+    for i, l in enumerate(lines):
+        draw.text((x0, ty + i * lh), l, font=f_title, fill=WHITE)
+        bottom = draw.textbbox((x0, ty + i * lh), l, font=f_title)[3]
+    cy = max(bottom + 38, 212)
+    fx = draw_flags(canvas, draw, x0, cy, lg.get("flags"))
+    draw.text((fx + 4, cy), (lg.get("country") or "").upper(), font=font("figtree-800", 26), fill=ON_DARK, anchor="lm")
+    return max(62 + tile, cy + 20) + 34
+
+
 COLS = [("W", 70), ("L", 70), ("PCT", 108), ("GB", 86), ("L10", 96), ("STRK", 96)]
 
 
@@ -159,14 +239,11 @@ def render_league_slide(lg: dict, data: dict, out: Path, now: datetime, groups: 
     canvas = Image.new("RGBA", (W, H), PETROL_DEEP + (255,))
     draw = ImageDraw.Draw(canvas)
     draw.rectangle([0, 0, W, 6], fill=RED)
-    draw_kicker(draw, 84, lg["label"].upper(), f"STANDINGS · {week_label(now)}")
-    title = (lg["name"] + (f" · {part}" if part else "")).upper()
-    f_title = fit_text(draw, title, "oswald-700", 84, 46, W - 2 * MARGIN)
-    draw.text((MARGIN, 150), title, font=f_title, fill=WHITE)
+    top = draw_league_header(canvas, draw, lg, now, part)
 
     n_rows = sum(len(g["rows"]) for g in groups)
     n_heads = sum(1 for g in groups if g["name"])
-    top, bottom = 290, H - 132 - 30
+    bottom = H - 132 - 30
     head_h = 46
     row_h = min(118, (bottom - top - 50 - n_heads * head_h) / n_rows)
     # column header
@@ -249,12 +326,12 @@ def render_cover(items: list[tuple[dict, dict]], out: Path, now: datetime):
         if i % 2 == 0:
             draw.rounded_rectangle([MARGIN - 16, y + 4, W - MARGIN + 16, y + row_h - 4], radius=10, fill=PETROL_MID)
         leader = data["groups"][0]["rows"][0]
-        f_chip = font("figtree-800", 24)
-        label = lg["label"].upper()
-        lw = draw.textlength(label, font=f_chip)
-        draw.rounded_rectangle([MARGIN, cy - 20, MARGIN + lw + 24, cy + 20], radius=7, fill=RED)
-        draw.text((MARGIN + 12, cy), label, font=f_chip, fill=WHITE, anchor="lm")
-        tx = MARGIN + 250
+        ts = int(row_h * 0.72)
+        league_tile(canvas, draw, lg, MARGIN - 4, cy - ts / 2, ts)
+        fx = draw_flags(canvas, draw, MARGIN + ts + 14, cy - 17, lg.get("flags"), h=24)
+        draw.text((MARGIN + ts + 14, cy + 17), lg["label"].upper(), font=font("figtree-800", 24), fill=RED_SOFT,
+                  anchor="lm")
+        tx = MARGIN + 300
         im = logo(leader.get("logo"), int(row_h * 0.6))
         if im:
             canvas.alpha_composite(im, (int(tx), int(cy - im.height / 2)))
