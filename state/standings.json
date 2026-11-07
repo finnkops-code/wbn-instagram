@@ -9,23 +9,23 @@
    "season": "2026"
   },
   "lidom": {
-   "games": 0,
+   "games": 94,
    "season": "2026"
   },
   "lmp": {
-   "games": 0,
+   "games": 204,
    "season": "2026"
   },
   "lvbp": {
-   "games": 0,
+   "games": 164,
    "season": "2026"
   },
   "lbprc": {
-   "games": 0,
+   "games": 16,
    "season": "2026"
   },
   "afl": {
-   "games": 0,
+   "games": 156,
    "season": "2026"
   },
   "lpb": {
@@ -165,6 +165,53 @@
    "season": "2025"
   }
  },
- "posts": [],
- "note": "Seeded 2026-11-07: leagues with regular-season games in the past week start at 0."
+ "posts": [
+  {
+   "posted_at": "2026-11-07T16:30:53+01:00",
+   "media_id": "18456891631124421",
+   "leagues": [
+    "aapb",
+    "abl",
+    "afl",
+    "apbn",
+    "atlantic",
+    "austria",
+    "belgium",
+    "california",
+    "carolina",
+    "cbl",
+    "cpb",
+    "cpbl",
+    "d1",
+    "dbl",
+    "dhb",
+    "eastern",
+    "elitserien",
+    "extraliga",
+    "frontier",
+    "fsl",
+    "hoofdklasse",
+    "il",
+    "kbo",
+    "lbprc",
+    "lidom",
+    "lmb",
+    "lmp",
+    "lpb",
+    "lvbp",
+    "midwest",
+    "mlb",
+    "nbl",
+    "nla",
+    "northwest",
+    "npb",
+    "npbfarm",
+    "pcl",
+    "sally",
+    "seriea",
+    "southern",
+    "texas"
+   ]
+  }
+ ]
 }
