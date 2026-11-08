@@ -16,8 +16,8 @@ from standings import draw_flags, fit_text  # noqa: E402
 LEAGUES = json.loads((ROOT / "assets" / "leagues_geo.json").read_text(encoding="utf-8"))
 FLAGS = {lg["key"]: lg.get("flags") for lg in bot.CFG["standings"]["leagues"]}
 LAT_MAX, LAT_MIN = 74, -56  # same projection as the homepage map (1800 x 650)
-LON_MIN, LON_MAX = -128, 160  # crop the empty Pacific edges so the map is bigger
-LAT_TOP, LAT_BOTTOM = 66, -46
+LON_MIN, LON_MAX = -180, 180  # crop the empty Pacific edges so the map is bigger
+LAT_TOP, LAT_BOTTOM = 74, -56  # whole map
 LABELS = {"mlb": "MLB", "npb": "NPB", "kbo": "KBO", "cpbl": "CPBL", "abl": "ABL", "lidom": "LIDOM", "lmb": "LMB",
           "lvbp": "LVBP", "hoofdklasse": "HOOFDKLASSE", "cpb": "CPB", "seriea": "SERIE A"}
 LABEL_SIDE = {"cpb": "left", "kbo": "up", "npb": "right", "cpbl": "right", "abl": "right", "hoofdklasse": "left",
@@ -39,13 +39,10 @@ def map_slide(out: Path):
     canvas = Image.new("RGBA", (W, H), PETROL_DEEP + (255,))
     draw = ImageDraw.Draw(canvas)
     draw.rectangle([0, 0, W, 6], fill=RED)
-    kicker(draw, 84, "WORLD BASEBALL NEWS", "")
-    f_big = font("oswald-700", 128)
-    draw.text((MARGIN, 140), "EVERY LEAGUE.", font=f_big, fill=WHITE)
-    draw.text((MARGIN, 284), "ONE HOME.", font=f_big, fill=RED_BRIGHT)
-    draw.text((MARGIN, 462), "Daily news, standings and stats from pro baseball", font=font("figtree-500", 32),
-              fill=ON_DARK)
-    draw.text((MARGIN, 504), "on five continents — not just MLB.", font=font("figtree-500", 32), fill=ON_DARK)
+    draw_chevrons(draw, MARGIN, 96, RED_BRIGHT)
+    f_big = font("oswald-700", 140)
+    draw.text((MARGIN, 150), "EVERY LEAGUE.", font=f_big, fill=WHITE)
+    draw.text((MARGIN, 306), "ONE HOME.", font=f_big, fill=RED_BRIGHT)
 
     # map: render the homepage dot-map at high resolution, then crop to the inhabited part
     scale = 2.2
@@ -62,7 +59,7 @@ def map_slide(out: Path):
     k = mw / crop.width
     mh = int(crop.height * k)
     crop = crop.resize((mw, mh), Image.LANCZOS)
-    my = 590
+    my = 560
     canvas.alpha_composite(crop, (0, my))
 
     def pos(lat, lon):
@@ -80,31 +77,12 @@ def map_slide(out: Path):
         x, y = pos(*lg["geo"])
         draw.ellipse([x - 7, y - 7, x + 7, y + 7], fill=RED_BRIGHT, outline=WHITE, width=2)
 
-    # labels for the headline leagues
-    f_lbl = font("oswald-600", 24)
-    for key, text in LABELS.items():
-        lg = next(l for l in LEAGUES if l["key"] == key)
-        x, y = pos(*lg["geo"])
-        tw = draw.textlength(text, font=f_lbl)
-        bw, bh = tw + 18, 34
-        side = LABEL_SIDE.get(key, "up")
-        if side == "up":
-            bx, by = x - bw / 2, y - 14 - bh
-        elif side == "down":
-            bx, by = x - bw / 2, y + 14
-        elif side == "left":
-            bx, by = x - 14 - bw, y - bh / 2
-        else:
-            bx, by = x + 14, y - bh / 2
-        draw.rounded_rectangle([bx, by, bx + bw, by + bh], radius=4, fill=RED)
-        draw.text((bx + bw / 2, by + bh / 2), text, font=f_lbl, fill=WHITE, anchor="mm")
-
     # key figures
     countries = set()
     for lg in bot.CFG["standings"]["leagues"]:
         countries.update(lg.get("flags") or [])
     stats = [(str(len(LEAGUES)), "LEAGUES"), (str(len(countries)), "COUNTRIES"), ("5", "CONTINENTS")]
-    sy = my + mh + 34
+    sy = my + mh + 70
     cw = (W - 2 * MARGIN) / 3
     for i, (num, lab) in enumerate(stats):
         cx = MARGIN + i * cw
