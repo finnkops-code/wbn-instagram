@@ -961,6 +961,24 @@ def fb_publish(image_url: str, caption: str) -> str | None:
         return None
 
 
+def cmd_prepare_custom(spec_path: str):
+    """One-off carousel from a spec (slides/*.json): runs its generator into posts/ and queues it."""
+    import subprocess
+    spec = json.loads((ROOT / spec_path).read_text(encoding="utf-8"))
+    if spec.get("generator"):
+        subprocess.run([sys.executable, str(ROOT / spec["generator"]), str(POSTS_DIR)], check=True)
+    files = spec["images"]
+    collabs = [c.strip().lstrip("@") for c in os.environ.get("COLLABORATORS", "").split(",") if c.strip()]
+    pending = {"url": spec["url"], "slot": "manual", "headline": spec["headline"], "title_on_image": spec["headline"],
+               "image_file": f"posts/{files[0]}", "image_url": CFG["image_base_url"] + files[0],
+               "extra_images": files[1:], "caption": spec["caption"],
+               "caption_facebook": spec.get("caption_facebook") or spec["caption"], "tag_context": "",
+               "collaborators": collabs or spec.get("collaborators") or []}
+    PENDING_FILE.write_text(json.dumps(pending, indent=2, ensure_ascii=False), encoding="utf-8")
+    log(f"Prepared custom carousel: {spec['headline']} ({len(files)} slides)")
+    gh_output("has_post", "true")
+
+
 def cmd_publish():
     if not PENDING_FILE.exists():
         log("Nothing pending.")
@@ -1156,6 +1174,7 @@ if __name__ == "__main__":
     {"prepare": cmd_prepare, "publish": cmd_publish, "seed": cmd_seed, "refresh-token": cmd_refresh_token,
      "rank": cmd_rank, "check": cmd_check, "tags": lambda: cmd_tags(sys.argv[2]),
      "prepare-url": lambda: cmd_prepare_url(sys.argv[2]),
+     "prepare-custom": lambda: cmd_prepare_custom(sys.argv[2]),
      "prepare-standings": lambda: __import__("standings").cmd_prepare(force=True),
      "facebook-only": lambda: cmd_facebook_only(sys.argv[2]),
      "preview": lambda: cmd_preview(sys.argv[2:])}.get(cmd, lambda: sys.exit(__doc__))()

@@ -39,7 +39,7 @@ def map_slide(out: Path):
     canvas = Image.new("RGBA", (W, H), PETROL_DEEP + (255,))
     draw = ImageDraw.Draw(canvas)
     draw.rectangle([0, 0, W, 6], fill=RED)
-    draw_chevrons(draw, MARGIN, 96, RED_BRIGHT)
+    kicker(draw, 84, "WHERE CAN YOU FIND US?", "")
     f_big = font("oswald-700", 140)
     draw.text((MARGIN, 150), "EVERY LEAGUE.", font=f_big, fill=WHITE)
     draw.text((MARGIN, 306), "ONE HOME.", font=f_big, fill=RED_BRIGHT)

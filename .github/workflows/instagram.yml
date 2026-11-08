@@ -65,6 +65,7 @@ jobs:
           STANDINGS: ${{ inputs.standings == true }}
         run: |
           if [ "$STANDINGS" = "true" ]; then python bot.py prepare-standings
+          elif [ "${ARTICLE_URL#custom:}" != "$ARTICLE_URL" ]; then python bot.py prepare-custom "${ARTICLE_URL#custom:}"
           elif [ -n "$ARTICLE_URL" ]; then python bot.py prepare-url "$ARTICLE_URL"; else python bot.py prepare; fi
 
       - name: Upload visual (Instagram fetches it from the public raw URL)
