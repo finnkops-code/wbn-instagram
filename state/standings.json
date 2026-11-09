@@ -9,19 +9,19 @@
    "season": "2026"
   },
   "lidom": {
-   "games": 94,
+   "games": 106,
    "season": "2026"
   },
   "lmp": {
-   "games": 204,
+   "games": 228,
    "season": "2026"
   },
   "lvbp": {
-   "games": 164,
+   "games": 178,
    "season": "2026"
   },
   "lbprc": {
-   "games": 16,
+   "games": 26,
    "season": "2026"
   },
   "afl": {
@@ -169,6 +169,53 @@
   {
    "posted_at": "2026-11-07T16:30:53+01:00",
    "media_id": "18456891631124421",
+   "leagues": [
+    "aapb",
+    "abl",
+    "afl",
+    "apbn",
+    "atlantic",
+    "austria",
+    "belgium",
+    "california",
+    "carolina",
+    "cbl",
+    "cpb",
+    "cpbl",
+    "d1",
+    "dbl",
+    "dhb",
+    "eastern",
+    "elitserien",
+    "extraliga",
+    "frontier",
+    "fsl",
+    "hoofdklasse",
+    "il",
+    "kbo",
+    "lbprc",
+    "lidom",
+    "lmb",
+    "lmp",
+    "lpb",
+    "lvbp",
+    "midwest",
+    "mlb",
+    "nbl",
+    "nla",
+    "northwest",
+    "npb",
+    "npbfarm",
+    "pcl",
+    "sally",
+    "seriea",
+    "southern",
+    "texas"
+   ]
+  },
+  {
+   "posted_at": "2026-11-09T17:39:35+01:00",
+   "media_id": "18023483633729009",
    "leagues": [
     "aapb",
     "abl",
