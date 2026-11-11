@@ -979,6 +979,33 @@ def cmd_prepare_custom(spec_path: str):
     gh_output("has_post", "true")
 
 
+def cmd_collabs():
+    """Auto-accept Instagram collaboration invites from trusted accounts (config: auto_accept_collaborators)."""
+    trusted = {u.lower().lstrip("@") for u in CFG.get("auto_accept_collaborators", [])}
+    if not trusted:
+        return
+    token = ig_token()
+    uid = ig_user_id(token)
+    url = f"{ig_base()}/{uid}/collaboration_invites"
+    r = requests.get(url, params={"access_token": token, "limit": 50}, timeout=30)
+    if r.status_code != 200:
+        print(f"::warning title=Collab invites: list failed::{r.text[:500]}", flush=True)
+        return
+    invites = r.json().get("data", [])
+    log(f"Collab invites pending: {len(invites)}")
+    for inv in invites:
+        owner = str(inv.get("media_owner_username", "")).lower()
+        if owner not in trusted:
+            log(f"  skip invite from @{owner} (media {inv.get('media_id')})")
+            continue
+        a = requests.post(url, params={"access_token": token, "media_id": inv["media_id"], "accept": "true"},
+                          timeout=30)
+        ok = a.status_code == 200 and a.json().get("success")
+        msg = f"@{owner} media {inv['media_id']}: {(inv.get('caption') or '')[:80]}"
+        print(f"::{'notice' if ok else 'warning'} title=Collab invite {'accepted' if ok else 'accept failed'}::"
+              f"{msg} {'' if ok else a.text[:300]}", flush=True)
+
+
 def cmd_publish():
     if not PENDING_FILE.exists():
         log("Nothing pending.")
@@ -1174,6 +1201,7 @@ if __name__ == "__main__":
     {"prepare": cmd_prepare, "publish": cmd_publish, "seed": cmd_seed, "refresh-token": cmd_refresh_token,
      "rank": cmd_rank, "check": cmd_check, "tags": lambda: cmd_tags(sys.argv[2]),
      "prepare-url": lambda: cmd_prepare_url(sys.argv[2]),
+     "collabs": cmd_collabs,
      "prepare-custom": lambda: cmd_prepare_custom(sys.argv[2]),
      "prepare-standings": lambda: __import__("standings").cmd_prepare(force=True),
      "facebook-only": lambda: cmd_facebook_only(sys.argv[2]),

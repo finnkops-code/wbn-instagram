@@ -53,6 +53,14 @@ jobs:
 
       - run: pip install -r requirements.txt
 
+      - name: Accept collab invites from trusted accounts
+        continue-on-error: true
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_API_ROUTE: ${{ vars.IG_API_ROUTE }}
+        run: python bot.py collabs
+
       - name: Pick headline, render visual + caption
         id: prep
         env:

@@ -25,4 +25,5 @@ jobs:
           HEADLINE: ${{ inputs.headline }}
         run: |
           python bot.py check | tee -a "$GITHUB_STEP_SUMMARY"
+          python bot.py collabs | tee -a "$GITHUB_STEP_SUMMARY"
           if [ -n "$HEADLINE" ]; then python bot.py tags "$HEADLINE" | tee -a "$GITHUB_STEP_SUMMARY"; fi

@@ -709,5 +709,8 @@
     "collaborators": [
       "worldbaseballhq"
     ]
-  }
+  },
+  "auto_accept_collaborators": [
+    "nachoe_baseball"
+  ]
 }
