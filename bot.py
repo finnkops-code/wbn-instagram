@@ -993,6 +993,9 @@ def cmd_collabs():
         return
     invites = r.json().get("data", [])
     log(f"Collab invites pending: {len(invites)}")
+    if invites:
+        print(f"::notice title=Collab invites::{len(invites)} pending from "
+              f"{', '.join('@' + str(i.get('media_owner_username')) for i in invites)}", flush=True)
     for inv in invites:
         owner = str(inv.get("media_owner_username", "")).lower()
         if owner not in trusted:
