@@ -966,7 +966,9 @@ def cmd_prepare_custom(spec_path: str):
     import subprocess
     spec = json.loads((ROOT / spec_path).read_text(encoding="utf-8"))
     if spec.get("generator"):
-        subprocess.run([sys.executable, str(ROOT / spec["generator"]), str(POSTS_DIR)], check=True)
+        gen = spec["generator"] if isinstance(spec["generator"], list) else [spec["generator"]]
+        subprocess.run([sys.executable, str(ROOT / gen[0]), *[str(ROOT / a) for a in gen[1:]], str(POSTS_DIR)],
+                       check=True)
     files = spec["images"]
     collabs = [c.strip().lstrip("@") for c in os.environ.get("COLLABORATORS", "").split(",") if c.strip()]
     pending = {"url": spec["url"], "slot": "manual", "headline": spec["headline"], "title_on_image": spec["headline"],
