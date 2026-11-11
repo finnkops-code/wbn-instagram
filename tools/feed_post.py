@@ -28,6 +28,67 @@ def check_badge(draw, cx, cy, r=22):
     draw.line([(cx - 10, cy + 1), (cx - 3, cy + 8), (cx + 11, cy - 8)], fill=WHITE, width=5, joint="curve")
 
 
+SITE = "https://worldbaseballnews.org"
+# (kind, key or logo path, name, followed) — leagues and teams mixed, like the follow screen on the site
+ROWS = [
+    [("team", "/team-logos/119.svg", "Los Angeles Dodgers", True), ("league", "npb", "NPB", True),
+     ("team", "/team-logos/npb-t.png", "Hanshin Tigers", False), ("league", "kbo", "KBO", False)],
+    [("league", "lidom", "LIDOM", True), ("team", "/team-logos/kbo-LG.png", "LG Twins", False),
+     ("team", "/team-logos/w39587.png", "Curaçao Neptunus", True), ("league", "cpbl", "CPBL", False)],
+    [("team", "/team-logos/147.svg", "New York Yankees", False), ("league", "hoofdklasse", "Hoofdklasse", True),
+     ("team", "/team-logos/672.svg", "Tigres del Licey", True)],
+    [("league", "abl", "ABL", True), ("team", "/team-logos/cpbl-rakuten.png", "Rakuten Monkeys", True),
+     ("team", "/team-logos/695.svg", "Leones del Caracas", False), ("league", "mlb", "MLB", False)],
+    [("team", "/team-logos/npb-g.png", "Yomiuri Giants", False), ("league", "lvbp", "LVBP", True),
+     ("team", "/team-logos/4068.png", "Perth Heat", True), ("league", "seriea", "Serie A", False)],
+]
+ROW_OFFSETS = [-70, -190, 40, -120, -30]
+
+
+def pill_logo(kind, ref, size):
+    if kind == "league":
+        f = ROOT / "league-logos" / f"{ref}.png"
+        im = Image.open(f).convert("RGBA") if f.exists() else None
+        if im:
+            im.thumbnail((size, size), Image.LANCZOS)
+        return im
+    import standings
+    return standings.logo(SITE + ref, size)
+
+
+def pill(canvas, x, cy, item, h=96):
+    """One follow pill: logo in a white circle, name, and Following (red) / Follow (+) state."""
+    kind, ref, name, on = item
+    draw = ImageDraw.Draw(canvas)
+    f_name = font("oswald-600", 36)
+    tw = draw.textlength(name.upper(), font=f_name)
+    w = h + 14 + tw + 26 + 52 + 22
+    layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+    ld = ImageDraw.Draw(layer)
+    if on:
+        ld.rounded_rectangle([x, cy - h / 2, x + w, cy + h / 2], radius=h / 2, fill=RED + (255,))
+    else:
+        ld.rounded_rectangle([x, cy - h / 2, x + w, cy + h / 2], radius=h / 2, fill=PETROL_MID + (255,),
+                             outline=PETROL_LINE + (255,), width=3)
+    canvas.alpha_composite(layer)
+    pad = 8
+    d = h - 2 * pad
+    draw.ellipse([x + pad, cy - d / 2, x + pad + d, cy + d / 2], fill=WHITE)
+    im = pill_logo(kind, ref, int(d * 0.68))
+    if im:
+        canvas.alpha_composite(im, (int(x + pad + (d - im.width) / 2), int(cy - im.height / 2)))
+    draw.text((x + h + 14, cy), name.upper(), font=f_name, fill=WHITE, anchor="lm")
+    bx = x + w - 22 - 52
+    if on:
+        draw.ellipse([bx, cy - 26, bx + 52, cy + 26], fill=WHITE)
+        draw.line([(bx + 14, cy + 1), (bx + 23, cy + 10), (bx + 39, cy - 9)], fill=RED, width=6, joint="curve")
+    else:
+        draw.ellipse([bx, cy - 26, bx + 52, cy + 26], outline=ON_DARK, width=3)
+        draw.line([(bx + 26, cy - 12), (bx + 26, cy + 12)], fill=ON_DARK, width=4)
+        draw.line([(bx + 14, cy), (bx + 38, cy)], fill=ON_DARK, width=4)
+    return w
+
+
 def slide1(out: Path):
     canvas = Image.new("RGBA", (W, H), PETROL_DEEP + (255,))
     draw = ImageDraw.Draw(canvas)
@@ -37,20 +98,20 @@ def slide1(out: Path):
     draw.text((MARGIN, 146), "YOUR LEAGUES.", font=f, fill=WHITE)
     draw.text((MARGIN, 276), "YOUR TEAMS.", font=f, fill=WHITE)
     draw.text((MARGIN, 406), "ONE FEED.", font=f, fill=RED_BRIGHT)
-
-    # league picker mock-up: 4 x 3 tiles, followed ones get a red ring + check
-    cols, gap = 4, 30
-    top, bottom = 590, H - 132 - 44
-    size = int((bottom - top - 2 * gap) / 3)
-    left = (W - (cols * size + (cols - 1) * gap)) / 2
-    for i, key in enumerate(GRID):
-        x = left + (i % cols) * (size + gap)
-        y = top + (i // cols) * (size + gap)
-        league_tile(canvas, draw, LG[key], x, y, size)
-        if key in FOLLOWED:
-            draw.rounded_rectangle([x - 5, y - 5, x + size + 5, y + size + 5], radius=size // 7 + 5,
-                                   outline=RED_BRIGHT, width=6)
-            check_badge(draw, x + size - 4, y + 4)
+    top, row_gap, h = 612, 22, 96
+    for r, row in enumerate(ROWS):
+        cy = top + r * (h + row_gap) + h / 2
+        x = ROW_OFFSETS[r]
+        for item in row:
+            x += pill(canvas, x, cy, item, h) + 20
+    # soft fade at both edges so cut-off pills read as "and many more"
+    fade = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    for i in range(110):
+        a = int(255 * (1 - i / 110) ** 1.6)
+        ImageDraw.Draw(fade).line([(i, top - 10), (i, H - 150)], fill=PETROL_DEEP + (a,))
+        ImageDraw.Draw(fade).line([(W - 1 - i, top - 10), (W - 1 - i, H - 150)], fill=PETROL_DEEP + (a,))
+    canvas.alpha_composite(fade)
+    draw = ImageDraw.Draw(canvas)
     draw_footer(draw, H - 132, "FREE ACCOUNT · LINK IN BIO")
     canvas.convert("RGB").save(out, "JPEG", quality=93)
 
