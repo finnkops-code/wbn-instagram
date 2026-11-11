@@ -37,20 +37,14 @@ def award_badge(canvas, x, y, week_label):
     d = ImageDraw.Draw(canvas)
     f1 = font("figtree-800", 24)
     f2 = font("oswald-700", 44)
-    w = 104 + ImageDraw.Draw(canvas).textlength("PLAYER OF THE WEEK", font=f2) + 34
+    w = 128 + ImageDraw.Draw(canvas).textlength("PLAYER OF THE WEEK", font=f2) + 34
     d.rounded_rectangle([x, y, x + w, y + 132], radius=14, fill=PETROL_DEEP + (235,), outline=GOLD, width=3)
-    # star
-    cx, cy, r = x + 58, y + 66, 30
-    import math
-    pts = []
-    for i in range(10):
-        a = -math.pi / 2 + i * math.pi / 5
-        rr = r if i % 2 == 0 else r * 0.45
-        pts.append((cx + rr * math.cos(a), cy + rr * math.sin(a)))
-    d.polygon(pts, fill=GOLD)
-    d.text((x + 104, y + 36), "WORLD", font=f1, fill=GOLD, anchor="lm")
-    d.text((x + 104, y + 74), "PLAYER OF THE WEEK", font=f2, fill=WHITE, anchor="lm")
-    d.text((x + 104, y + 110), week_label, font=font("figtree-700", 20), fill=ON_DARK_2, anchor="lm")
+    # WBN logo
+    logo = Image.open(ROOT / "assets" / "wbn-logo.png").convert("RGBA").resize((100, 100), Image.LANCZOS)
+    canvas.alpha_composite(logo, (int(x + 14), int(y + 16)))
+    d.text((x + 128, y + 36), "WORLD", font=f1, fill=GOLD, anchor="lm")
+    d.text((x + 128, y + 74), "PLAYER OF THE WEEK", font=f2, fill=WHITE, anchor="lm")
+    d.text((x + 128, y + 110), week_label, font=font("figtree-700", 20), fill=ON_DARK_2, anchor="lm")
 
 
 def slide1(spec, out: Path):
