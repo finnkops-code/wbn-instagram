@@ -114,6 +114,11 @@ def snapshot_candidates(start: date, end: date) -> list[dict]:
         if prev is None:
             continue
         cands = potw.candidates(key, prev, data)
+        global ACTIVE_PLAYERS
+        ACTIVE_PLAYERS += sum(1 for r in potw.diff_rows(prev.get("hitting", []), data.get("hitting", []), potw.HIT_KEYS)
+                              if r["pa"] > 0)
+        ACTIVE_PLAYERS += sum(1 for r in potw.diff_rows(prev.get("pitching", []), data.get("pitching", []), potw.PIT_KEYS)
+                              if r.get("outs", 0) > 0)
         names = {}
         if cands:
             try:
@@ -185,6 +190,8 @@ def statsapi_candidates(start: date, end: date) -> list[dict]:
     out = []
     for rec in players.values():
         out += statsapi_lines(rec)
+    global ACTIVE_PLAYERS
+    ACTIVE_PLAYERS += len(players)
     return out
 
 
@@ -446,12 +453,16 @@ def build(winner: dict, photo: dict, ranked: list[dict], start: date, end: date,
 
 
 # ----------------------------------------------------------------------------- main entry points
+ACTIVE_PLAYERS = 0
+
+
 def rank_week(start: date, end: date):
+    global ACTIVE_PLAYERS
+    ACTIVE_PLAYERS = 0
     cands = statsapi_candidates(start, end) + snapshot_candidates(start, end)
     cands.sort(key=lambda c: -c["score"])
-    played = {(c["name"], c["league"]) for c in cands}
     leagues = {c["league"] for c in cands}
-    return cands, len(played), len(leagues)
+    return cands, ACTIVE_PLAYERS, len(leagues)
 
 
 def due(now: datetime) -> bool:

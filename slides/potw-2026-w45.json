@@ -5,11 +5,11 @@
  "last": "Ferrer",
  "team": "Criollos de Caguas",
  "league": "lbprc",
- "photo": "assets/potw/potw-2026-w45.jpg",
+ "photo": "assets/potw/2026-w45-jaime-ferrer.jpg",
  "crop": [
-  374,
+  380,
   0,
-  1226,
+  1233,
   1066
  ],
  "v_align": 0.0,
@@ -40,23 +40,23 @@
   },
   {
    "date": "Sun Nov 8",
-   "opp": "at Indios de Mayaguez",
+   "opp": "vs Indios de Mayagüez",
    "line": "2-4 · 2B · RBI · BB"
   }
  ],
- "highlight": "Best game: 3-4, 2 HR, 3 RBI, 2 BB vs Leones de Ponce on Fri Nov 6.",
- "evaluated": "466 players · 5 leagues",
+ "highlight": "Two home runs in his Criollos debut. Only the fourth player in Puerto Rican winter league history to do that.",
+ "evaluated": "1,198 players · 5 leagues",
  "race": [
   {
    "name": "Jaime Ferrer",
    "league": "lbprc",
-   "line": "5-for-8 · 2 HR",
+   "line": "5-for-8 · 2 HR · .727 OBP",
    "winner": true
   },
   {
-   "name": "Orlando Martinez",
+   "name": "Orlando Martínez",
    "league": "lmp",
-   "line": "13-for-21 · 2 HR"
+   "line": "13-for-21 · 2 HR · 6 BB"
   },
   {
    "name": "Vidal Bruján",
@@ -64,19 +64,19 @@
    "line": "8-for-14 · HR · 2 3B · 4 SB"
   },
   {
+   "name": "Isan Díaz",
+   "league": "lbprc",
+   "line": "6-for-14 · 3 HR · 9 BB"
+  },
+  {
    "name": "René Pinto",
    "league": "lvbp",
-   "line": "8-for-18 · 2 HR · 6 RBI"
+   "line": "8-for-18 · 2 HR · 3 2B"
   },
   {
    "name": "Zion Rose",
    "league": "afl",
-   "line": "6-for-14 · HR · 3B · 6 SB"
-  },
-  {
-   "name": "Isan Díaz",
-   "league": "lbprc",
-   "line": "6-for-14 · 3 HR · 5 RBI"
+   "line": "6-for-14 · 7 RBI · 6 SB"
   }
  ]
 }
