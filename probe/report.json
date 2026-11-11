@@ -1,0 +1,762 @@
+[
+ {
+  "name": "Orlando Martinez",
+  "id": 678636,
+  "team": "Tomateros de Culiacan",
+  "league": "lmp",
+  "games": [
+   {
+    "date": "2026-11-03",
+    "gamePk": 850483,
+    "opp": "Naranjeros de Hermosillo",
+    "team": "Tomateros de Culiacan",
+    "line": {
+     "atBats": 3,
+     "hits": 1,
+     "doubles": 1,
+     "triples": 0,
+     "homeRuns": 0,
+     "rbi": 0,
+     "runs": 1,
+     "baseOnBalls": 2,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 1
+    }
+   },
+   {
+    "date": "2026-11-04",
+    "gamePk": 850472,
+    "opp": "Naranjeros de Hermosillo",
+    "team": "Tomateros de Culiacan",
+    "line": {
+     "atBats": 2,
+     "hits": 2,
+     "doubles": 0,
+     "triples": 0,
+     "homeRuns": 0,
+     "rbi": 0,
+     "runs": 1,
+     "baseOnBalls": 2,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 0
+    }
+   },
+   {
+    "date": "2026-11-05",
+    "gamePk": 850481,
+    "opp": "Naranjeros de Hermosillo",
+    "team": "Tomateros de Culiacan",
+    "line": {
+     "atBats": 4,
+     "hits": 3,
+     "doubles": 0,
+     "triples": 0,
+     "homeRuns": 0,
+     "rbi": 0,
+     "runs": 1,
+     "baseOnBalls": 0,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 0
+    }
+   },
+   {
+    "date": "2026-11-06",
+    "gamePk": 850470,
+    "opp": "Jaguares de Nayarit",
+    "team": "Tomateros de Culiacan",
+    "line": {
+     "atBats": 5,
+     "hits": 3,
+     "doubles": 0,
+     "triples": 0,
+     "homeRuns": 1,
+     "rbi": 1,
+     "runs": 2,
+     "baseOnBalls": 0,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 0
+    }
+   },
+   {
+    "date": "2026-11-07",
+    "gamePk": 850465,
+    "opp": "Jaguares de Nayarit",
+    "team": "Tomateros de Culiacan",
+    "line": {
+     "atBats": 4,
+     "hits": 3,
+     "doubles": 1,
+     "triples": 0,
+     "homeRuns": 0,
+     "rbi": 1,
+     "runs": 1,
+     "baseOnBalls": 1,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 0
+    }
+   },
+   {
+    "date": "2026-11-08",
+    "gamePk": 850459,
+    "opp": "Jaguares de Nayarit",
+    "team": "Tomateros de Culiacan",
+    "line": {
+     "atBats": 3,
+     "hits": 1,
+     "doubles": 0,
+     "triples": 0,
+     "homeRuns": 1,
+     "rbi": 1,
+     "runs": 1,
+     "baseOnBalls": 1,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 0
+    }
+   }
+  ],
+  "images": [],
+  "sport": 17
+ },
+ {
+  "name": "Vidal Bruján",
+  "id": 660644,
+  "team": "Leones del Escogido",
+  "league": "lidom",
+  "games": [
+   {
+    "date": "2026-11-03",
+    "gamePk": 851478,
+    "opp": "Toros del Este",
+    "team": "Leones del Escogido",
+    "line": {
+     "atBats": 3,
+     "hits": 0,
+     "doubles": 0,
+     "triples": 0,
+     "homeRuns": 0,
+     "rbi": 0,
+     "runs": 1,
+     "baseOnBalls": 2,
+     "stolenBases": 2,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 0
+    }
+   },
+   {
+    "date": "2026-11-04",
+    "gamePk": 851476,
+    "opp": "Gigantes del Cibao",
+    "team": "Leones del Escogido",
+    "line": {
+     "atBats": 3,
+     "hits": 2,
+     "doubles": 0,
+     "triples": 1,
+     "homeRuns": 0,
+     "rbi": 2,
+     "runs": 2,
+     "baseOnBalls": 1,
+     "stolenBases": 1,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 0
+    }
+   },
+   {
+    "date": "2026-11-07",
+    "gamePk": 851543,
+    "opp": "Estrellas Orientales",
+    "team": "Leones del Escogido",
+    "line": {
+     "atBats": 5,
+     "hits": 3,
+     "doubles": 0,
+     "triples": 0,
+     "homeRuns": 1,
+     "rbi": 2,
+     "runs": 2,
+     "baseOnBalls": 0,
+     "stolenBases": 1,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 1
+    }
+   },
+   {
+    "date": "2026-11-08",
+    "gamePk": 851475,
+    "opp": "Tigres del Licey",
+    "team": "Leones del Escogido",
+    "line": {
+     "atBats": 3,
+     "hits": 3,
+     "doubles": 1,
+     "triples": 1,
+     "homeRuns": 0,
+     "rbi": 0,
+     "runs": 1,
+     "baseOnBalls": 2,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 0
+    }
+   }
+  ],
+  "images": [],
+  "sport": 17
+ },
+ {
+  "name": "Isan Díaz",
+  "id": 656371,
+  "team": "Indios de Mayaguez",
+  "league": "lbprc",
+  "games": [
+   {
+    "date": "2026-11-04",
+    "gamePk": 872083,
+    "opp": "Gigantes de Carolina",
+    "team": "Indios de Mayaguez",
+    "line": {
+     "atBats": 3,
+     "hits": 1,
+     "doubles": 0,
+     "triples": 0,
+     "homeRuns": 0,
+     "rbi": 0,
+     "runs": 0,
+     "baseOnBalls": 1,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 1
+    }
+   },
+   {
+    "date": "2026-11-05",
+    "gamePk": 872093,
+    "opp": "Gigantes de Carolina",
+    "team": "Indios de Mayaguez",
+    "line": {
+     "atBats": 3,
+     "hits": 0,
+     "doubles": 0,
+     "triples": 0,
+     "homeRuns": 0,
+     "rbi": 0,
+     "runs": 0,
+     "baseOnBalls": 1,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 3
+    }
+   },
+   {
+    "date": "2026-11-06",
+    "gamePk": 872088,
+    "opp": "Cangrejeros de Santurce",
+    "team": "Indios de Mayaguez",
+    "line": {
+     "atBats": 4,
+     "hits": 3,
+     "doubles": 1,
+     "triples": 0,
+     "homeRuns": 2,
+     "rbi": 2,
+     "runs": 2,
+     "baseOnBalls": 2,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 0
+    }
+   },
+   {
+    "date": "2026-11-07",
+    "gamePk": 872085,
+    "opp": "Cangrejeros de Santurce",
+    "team": "Indios de Mayaguez",
+    "line": {
+     "atBats": 2,
+     "hits": 1,
+     "doubles": 1,
+     "triples": 0,
+     "homeRuns": 0,
+     "rbi": 1,
+     "runs": 0,
+     "baseOnBalls": 3,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 1
+    }
+   },
+   {
+    "date": "2026-11-08",
+    "gamePk": 872072,
+    "opp": "Criollos de Caguas",
+    "team": "Indios de Mayaguez",
+    "line": {
+     "atBats": 2,
+     "hits": 1,
+     "doubles": 0,
+     "triples": 0,
+     "homeRuns": 1,
+     "rbi": 2,
+     "runs": 1,
+     "baseOnBalls": 2,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 0
+    }
+   }
+  ],
+  "images": [],
+  "sport": 17
+ },
+ {
+  "name": "Jaime Ferrer",
+  "id": 695634,
+  "team": "Criollos de Caguas",
+  "league": "lbprc",
+  "games": [
+   {
+    "date": "2026-11-06",
+    "gamePk": 872090,
+    "opp": "Leones de Ponce",
+    "team": "Criollos de Caguas",
+    "line": {
+     "atBats": 4,
+     "hits": 3,
+     "doubles": 0,
+     "triples": 0,
+     "homeRuns": 2,
+     "rbi": 3,
+     "runs": 3,
+     "baseOnBalls": 2,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 0
+    }
+   },
+   {
+    "date": "2026-11-08",
+    "gamePk": 872072,
+    "opp": "Indios de Mayaguez",
+    "team": "Criollos de Caguas",
+    "line": {
+     "atBats": 4,
+     "hits": 2,
+     "doubles": 1,
+     "triples": 0,
+     "homeRuns": 0,
+     "rbi": 1,
+     "runs": 1,
+     "baseOnBalls": 1,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 1
+    }
+   }
+  ],
+  "images": [],
+  "sport": 17
+ },
+ {
+  "name": "Brian Navarreto",
+  "id": 640459,
+  "team": "Cangrejeros de Santurce",
+  "league": "lbprc",
+  "games": [
+   {
+    "date": "2026-11-04",
+    "gamePk": 872094,
+    "opp": "Leones de Ponce",
+    "team": "Cangrejeros de Santurce",
+    "line": {
+     "atBats": 3,
+     "hits": 1,
+     "doubles": 0,
+     "triples": 0,
+     "homeRuns": 0,
+     "rbi": 0,
+     "runs": 1,
+     "baseOnBalls": 1,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 0
+    }
+   },
+   {
+    "date": "2026-11-06",
+    "gamePk": 872088,
+    "opp": "Indios de Mayaguez",
+    "team": "Cangrejeros de Santurce",
+    "line": {
+     "atBats": 4,
+     "hits": 1,
+     "doubles": 1,
+     "triples": 0,
+     "homeRuns": 0,
+     "rbi": 0,
+     "runs": 1,
+     "baseOnBalls": 1,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 0
+    }
+   },
+   {
+    "date": "2026-11-08",
+    "gamePk": 872084,
+    "opp": "Gigantes de Carolina",
+    "team": "Cangrejeros de Santurce",
+    "line": {
+     "atBats": 5,
+     "hits": 5,
+     "doubles": 0,
+     "triples": 2,
+     "homeRuns": 1,
+     "rbi": 5,
+     "runs": 2,
+     "baseOnBalls": 0,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 0
+    }
+   }
+  ],
+  "images": [],
+  "sport": 17
+ },
+ {
+  "name": "René Pinto",
+  "id": 650907,
+  "team": "Tigres de Aragua",
+  "league": "lvbp",
+  "games": [
+   {
+    "date": "2026-11-02",
+    "gamePk": 870025,
+    "opp": "Cardenales de Lara",
+    "team": "Tigres de Aragua",
+    "line": {
+     "atBats": 4,
+     "hits": 3,
+     "doubles": 1,
+     "triples": 0,
+     "homeRuns": 0,
+     "rbi": 0,
+     "runs": 0,
+     "baseOnBalls": 0,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 0
+    }
+   },
+   {
+    "date": "2026-11-04",
+    "gamePk": 870028,
+    "opp": "Cardenales de Lara",
+    "team": "Tigres de Aragua",
+    "line": {
+     "atBats": 5,
+     "hits": 2,
+     "doubles": 1,
+     "triples": 0,
+     "homeRuns": 1,
+     "rbi": 3,
+     "runs": 1,
+     "baseOnBalls": 0,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 1
+    }
+   },
+   {
+    "date": "2026-11-05",
+    "gamePk": 870008,
+    "opp": "Tiburones de La Guaira",
+    "team": "Tigres de Aragua",
+    "line": {
+     "atBats": 2,
+     "hits": 2,
+     "doubles": 0,
+     "triples": 0,
+     "homeRuns": 1,
+     "rbi": 2,
+     "runs": 1,
+     "baseOnBalls": 2,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 0
+    }
+   },
+   {
+    "date": "2026-11-06",
+    "gamePk": 870013,
+    "opp": "Tiburones de La Guaira",
+    "team": "Tigres de Aragua",
+    "line": {
+     "atBats": 5,
+     "hits": 1,
+     "doubles": 1,
+     "triples": 0,
+     "homeRuns": 0,
+     "rbi": 1,
+     "runs": 0,
+     "baseOnBalls": 0,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 2
+    }
+   },
+   {
+    "date": "2026-11-07",
+    "gamePk": 870011,
+    "opp": "Leones del Caracas",
+    "team": "Tigres de Aragua",
+    "line": {
+     "atBats": 2,
+     "hits": 0,
+     "doubles": 0,
+     "triples": 0,
+     "homeRuns": 0,
+     "rbi": 0,
+     "runs": 0,
+     "baseOnBalls": 1,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 2
+    }
+   }
+  ],
+  "images": [],
+  "sport": 17
+ },
+ {
+  "name": "Lisbel Diaz",
+  "id": 815464,
+  "team": "Gigantes de Carolina",
+  "league": "lbprc",
+  "games": [
+   {
+    "date": "2026-11-04",
+    "gamePk": 872083,
+    "opp": "Indios de Mayaguez",
+    "team": "Gigantes de Carolina",
+    "line": {
+     "atBats": 4,
+     "hits": 2,
+     "doubles": 1,
+     "triples": 0,
+     "homeRuns": 0,
+     "rbi": 3,
+     "runs": 1,
+     "baseOnBalls": 1,
+     "stolenBases": 1,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 1
+    }
+   },
+   {
+    "date": "2026-11-05",
+    "gamePk": 872093,
+    "opp": "Indios de Mayaguez",
+    "team": "Gigantes de Carolina",
+    "line": {
+     "atBats": 4,
+     "hits": 2,
+     "doubles": 1,
+     "triples": 0,
+     "homeRuns": 0,
+     "rbi": 0,
+     "runs": 1,
+     "baseOnBalls": 0,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 0
+    }
+   },
+   {
+    "date": "2026-11-06",
+    "gamePk": 872089,
+    "opp": "Senadores de San Juan",
+    "team": "Gigantes de Carolina",
+    "line": {
+     "atBats": 5,
+     "hits": 3,
+     "doubles": 1,
+     "triples": 0,
+     "homeRuns": 0,
+     "rbi": 1,
+     "runs": 1,
+     "baseOnBalls": 0,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 0
+    }
+   },
+   {
+    "date": "2026-11-07",
+    "gamePk": 872086,
+    "opp": "Leones de Ponce",
+    "team": "Gigantes de Carolina",
+    "line": {
+     "atBats": 5,
+     "hits": 3,
+     "doubles": 1,
+     "triples": 0,
+     "homeRuns": 1,
+     "rbi": 2,
+     "runs": 2,
+     "baseOnBalls": 0,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 1
+    }
+   },
+   {
+    "date": "2026-11-08",
+    "gamePk": 872084,
+    "opp": "Cangrejeros de Santurce",
+    "team": "Gigantes de Carolina",
+    "line": {
+     "atBats": 5,
+     "hits": 2,
+     "doubles": 1,
+     "triples": 0,
+     "homeRuns": 0,
+     "rbi": 0,
+     "runs": 2,
+     "baseOnBalls": 0,
+     "stolenBases": 0,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 1
+    }
+   }
+  ],
+  "images": [],
+  "sport": 17
+ },
+ {
+  "name": "Zion Rose",
+  "id": 805799,
+  "team": "Surprise Saguaros",
+  "league": "afl",
+  "games": [
+   {
+    "date": "2026-11-02",
+    "gamePk": 867664,
+    "opp": "Mesa Solar Sox",
+    "team": "Surprise Saguaros",
+    "line": {
+     "atBats": 4,
+     "hits": 2,
+     "doubles": 0,
+     "triples": 0,
+     "homeRuns": 1,
+     "rbi": 4,
+     "runs": 3,
+     "baseOnBalls": 2,
+     "stolenBases": 3,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 0
+    }
+   },
+   {
+    "date": "2026-11-03",
+    "gamePk": 867660,
+    "opp": "Scottsdale Scorpions",
+    "team": "Surprise Saguaros",
+    "line": {
+     "atBats": 4,
+     "hits": 2,
+     "doubles": 0,
+     "triples": 1,
+     "homeRuns": 0,
+     "rbi": 0,
+     "runs": 2,
+     "baseOnBalls": 1,
+     "stolenBases": 1,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 1
+    }
+   },
+   {
+    "date": "2026-11-05",
+    "gamePk": 867647,
+    "opp": "Scottsdale Scorpions",
+    "team": "Surprise Saguaros",
+    "line": {
+     "atBats": 3,
+     "hits": 0,
+     "doubles": 0,
+     "triples": 0,
+     "homeRuns": 0,
+     "rbi": 1,
+     "runs": 1,
+     "baseOnBalls": 2,
+     "stolenBases": 1,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 2
+    }
+   },
+   {
+    "date": "2026-11-06",
+    "gamePk": 867650,
+    "opp": "Salt River Rafters",
+    "team": "Surprise Saguaros",
+    "line": {
+     "atBats": 3,
+     "hits": 2,
+     "doubles": 1,
+     "triples": 0,
+     "homeRuns": 0,
+     "rbi": 2,
+     "runs": 0,
+     "baseOnBalls": 0,
+     "stolenBases": 1,
+     "inningsPitched": null,
+     "earnedRuns": null,
+     "strikeOuts": 0
+    }
+   }
+  ],
+  "images": [],
+  "sport": 17
+ }
+]
