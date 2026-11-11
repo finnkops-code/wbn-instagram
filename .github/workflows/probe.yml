@@ -1,0 +1,21 @@
+name: POTW probe
+on:
+  workflow_dispatch:
+    inputs:
+      start: {type: string, default: "2026-11-02"}
+      end: {type: string, default: "2026-11-08"}
+      n: {type: string, default: "8"}
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install requests
+      - run: python tools/potw_probe.py "${{ inputs.start }}" "${{ inputs.end }}" "${{ inputs.n }}"
+      - run: |
+          git config user.name "wbn-instagram-bot"; git config user.email "actions@users.noreply.github.com"
+          git add probe/ && (git diff --cached --quiet || (git commit -m "POTW probe" && git pull --rebase -q && git push))
