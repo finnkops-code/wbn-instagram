@@ -893,6 +893,17 @@ def cmd_prepare():
         return
     state = load_state()
     try:
+        import potw_run
+        now_nl = datetime.now(TZ)
+        if potw_run.snapshot_due(now_nl):
+            potw_run.take_snapshot(now_nl)
+        if potw_run.due(now_nl):
+            log("World Player of the Week is due.")
+            if potw_run.cmd_prepare():
+                return
+    except Exception as e:
+        print(f"::error title=Player of the Week failed::{str(e)[:900]}", flush=True)
+    try:
         import standings
         if standings.due():
             log("Weekly standings carousel is due.")
@@ -975,7 +986,8 @@ def cmd_prepare_custom(spec_path: str):
                "image_file": f"posts/{files[0]}", "image_url": CFG["image_base_url"] + files[0],
                "extra_images": files[1:], "caption": spec["caption"],
                "caption_facebook": spec.get("caption_facebook") or spec["caption"], "tag_context": "",
-               "collaborators": collabs or spec.get("collaborators") or []}
+               "collaborators": collabs or spec.get("collaborators") or [],
+               "potw_week": spec.get("potw_week")}
     PENDING_FILE.write_text(json.dumps(pending, indent=2, ensure_ascii=False), encoding="utf-8")
     log(f"Prepared custom carousel: {spec['headline']} ({len(files)} slides)")
     gh_output("has_post", "true")
@@ -1043,6 +1055,9 @@ def cmd_publish():
         "posted_at": datetime.now(TZ).isoformat(timespec="seconds"),
     })
     save_state(state)
+    if p.get("potw_week"):
+        import potw_run
+        potw_run.mark_posted(p["potw_week"], media_id)
     if p.get("standings_snapshot") is not None:
         import standings
         standings.save_after_post(p["standings_snapshot"], media_id)

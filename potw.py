@@ -74,12 +74,33 @@ def game_score(outs, h, er, bb, so) -> float:
     return 50 + outs + 2 * full_inn_after_4 + so - 2 * h - 4 * er - bb
 
 
-def pitcher_score(w: dict) -> tuple[float, list[str]] | None:
+def hitter_game_value(b: dict) -> float:
+    h, d, t, hr = (int(b.get(k) or 0) for k in ("hits", "doubles", "triples", "homeRuns"))
+    return (h - d - t - hr) + 2 * d + 3 * t + 4 * hr + 0.7 * int(b.get("baseOnBalls") or 0) + 0.5 * int(b.get("rbi") or 0)
+
+
+def pitcher_score(w: dict, starts: list[dict] | None = None) -> tuple[float, list[str]] | None:
     outs = w["outs"]
     if outs < MIN_OUTS:
         return None
     notes = []
     gs = max(w["gs"], 0)
+    if starts:  # exact per-start lines from box scores
+        scores = []
+        for p in starts:
+            o = int(p.get("outs") or 0)
+            g_s = game_score(o, int(p.get("hits") or 0), int(p.get("earnedRuns") or 0), int(p.get("baseOnBalls") or 0),
+                             int(p.get("strikeOuts") or 0))
+            if o >= 27 and int(p.get("hits") or 0) == 0:
+                perfect = int(p.get("battersFaced") or 0) == 27
+                g_s += 35 if perfect else 25
+                notes.append("threw a perfect game" if perfect else "threw a no-hitter")
+            elif o >= 27 and int(p.get("runs") or 0) == 0:
+                g_s += 8
+                notes.append("threw a complete-game shutout")
+            scores.append(g_s)
+        score = (sum(scores) / len(scores) - 50) * 1.2 + 6 * (len(scores) - 1)
+        return score, notes
     if gs >= 1:
         avg = game_score(outs / gs, w["h"] / gs, w["er"] / gs, w["bb"] / gs, w["so"] / gs)
         score = (avg - 50) * 1.2 + 6 * (gs - 1)

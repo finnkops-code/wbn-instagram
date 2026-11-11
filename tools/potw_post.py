@@ -82,7 +82,10 @@ def slide1(spec, out: Path):
     sy = H - 132 - 150                       # stat row top
     ty = sy - 34                             # team line (centre)
     base = ty - 42                           # baseline of the last name
-    gold_text(canvas, (MARGIN - 6, base), spec["last"].upper(), font("oswald-700", 190), anchor="ls")
+    size = 190
+    while size > 96 and ImageDraw.Draw(canvas).textlength(spec["last"].upper(), font=font("oswald-700", size)) > W - 2 * MARGIN:
+        size -= 6
+    gold_text(canvas, (MARGIN - 6, base), spec["last"].upper(), font("oswald-700", size), anchor="ls")
     d.text((MARGIN, base - 168), spec["first"].upper(), font=font("oswald-700", 80), fill=WHITE, anchor="ls")
     lg = LG[spec["league"]]
     fx = draw_flags(canvas, d, MARGIN, ty, lg.get("flags"), h=30)
@@ -116,12 +119,19 @@ def slide2(spec, out: Path):
     y = 270
     f_d = font("figtree-800", 26)
     f_l = font("oswald-600", 34)
-    for g in spec["games"]:
-        d.rounded_rectangle([MARGIN - 16, y, W - MARGIN + 16, y + 82], radius=12, fill=PETROL_MID)
-        d.text((MARGIN + 4, y + 41), g["date"].upper(), font=f_d, fill=GOLD, anchor="lm")
-        d.text((MARGIN + 176, y + 41), g["opp"].upper(), font=font("figtree-700", 26), fill=ON_DARK, anchor="lm")
-        d.text((W - MARGIN, y + 41), g["line"], font=f_l, fill=WHITE, anchor="rm")
-        y += 96
+    games = spec["games"][:7]
+    rh = 82 if len(games) <= 3 else 60
+    for g in games:
+        d.rounded_rectangle([MARGIN - 16, y, W - MARGIN + 16, y + rh], radius=12, fill=PETROL_MID)
+        d.text((MARGIN + 4, y + rh / 2), g["date"].upper(), font=font("figtree-800", 26 if rh > 70 else 22), fill=GOLD, anchor="lm")
+        lw = d.textlength(g["line"], font=font("oswald-600", 34 if rh > 70 else 28))
+        opp_font = font("figtree-700", 26 if rh > 70 else 21)
+        opp = g["opp"].upper()
+        while d.textlength(opp, font=opp_font) > W - MARGIN - lw - 30 - (MARGIN + 176) and len(opp) > 6:
+            opp = opp[:-2].rstrip() + "…" if not opp.endswith("…") else opp[:-2].rstrip() + "…"
+        d.text((MARGIN + 176, y + rh / 2), opp, font=opp_font, fill=ON_DARK, anchor="lm")
+        d.text((W - MARGIN, y + rh / 2), g["line"], font=font("oswald-600", 34 if rh > 70 else 28), fill=WHITE, anchor="rm")
+        y += rh + (14 if rh > 70 else 8)
     if spec.get("highlight"):
         y += 10
         d.rectangle([MARGIN, y, MARGIN + 6, y + 92], fill=GOLD)

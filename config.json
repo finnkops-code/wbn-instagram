@@ -712,5 +712,41 @@
   },
   "auto_accept_collaborators": [
     "nachoe_baseball"
-  ]
+  ],
+  "potw": {
+    "post_weekday": 3,
+    "post_after": "17:00",
+    "snapshot_after": "12:00",
+    "start_date": "2026-11-19",
+    "statsapi_sports": [
+      1,
+      11,
+      12,
+      13,
+      14,
+      17
+    ],
+    "max_candidates": 12,
+    "statsapi_leagues": [
+      "mlb",
+      "afl",
+      "il",
+      "pcl",
+      "eastern",
+      "southern",
+      "texas",
+      "sally",
+      "midwest",
+      "northwest",
+      "carolina",
+      "fsl",
+      "california",
+      "lmb",
+      "lidom",
+      "lmp",
+      "lvbp",
+      "lbprc",
+      "abl"
+    ]
+  }
 }
