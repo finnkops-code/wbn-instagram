@@ -593,6 +593,20 @@
       "tags": null,
       "collaborators": null,
       "posted_at": "2026-11-11T11:21:41+01:00"
+    },
+    {
+      "url": "https://worldbaseballnews.org/news/npb/2026-npb-golden-glove-awards-winners/",
+      "headline": "2026 NPB Golden Glove Awards: all 18 winners on the field",
+      "slot": "manual",
+      "image": "posts/npb-gg-2026-1.jpg",
+      "media_id": "18002133651101925",
+      "facebook_post_id": "924847174034802_122149889805132879",
+      "tags": null,
+      "collaborators": [
+        "worldbaseballhq",
+        "nachoe_baseball"
+      ],
+      "posted_at": "2026-11-11T13:06:01+01:00"
     }
   ]
 }
