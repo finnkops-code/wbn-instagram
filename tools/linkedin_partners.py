@@ -9,12 +9,29 @@ from bot import (MARGIN, ON_DARK, ON_DARK_2, PETROL_DEEP, PETROL_LINE, PETROL_MI
                  WHITE, W, H, draw_chevrons, draw_footer, font)
 
 P = ROOT / "assets" / "partners"
-PARTNERS = [  # (file, dark tile, round)
-    ("swiss-baseball-softball-federation.webp", False, False), ("bat-king-europe.webp", True, False),
-    ("forelle.webp", False, False), ("covee.webp", False, False), ("candyball.webp", False, False),
-    ("katana.png", False, False), ("baseball-jobs-overseas.png", False, False), ("merkzicht.webp", False, False),
-    ("world-baseball-hq.webp", False, True), ("nachoe-baseball.webp", False, True),
+ROWS = [  # each row: (group label, [(file, round logo)]) segments
+    [("LEAGUE PARTNER", [("swiss-baseball-softball-federation.webp", False)]),
+     ("BRANDED PARTNERS", [("candyball.webp", False), ("katana.png", False)])],
+    [("COMMERCIAL PARTNERS", [("bat-king-europe.webp", False), ("forelle.webp", False), ("covee.webp", False)])],
+    [("MEDIA PARTNERS", [("baseball-jobs-overseas.png", False), ("merkzicht.webp", False)]),
+     ("SOCIAL MEDIA PARTNERS", [("world-baseball-hq.webp", True), ("nachoe-baseball.webp", True)])],
 ]
+
+
+def knock_out_black(im: Image.Image) -> Image.Image:
+    """Logos delivered on a black square (Bat King): make the black transparent so they sit on white."""
+    px = im.getpixel((0, 0))
+    if px[3] and max(px[:3]) < 40:
+        from PIL import ImageOps
+        lum = im.convert("RGB").split()
+        mx = Image.merge("RGB", lum).convert("L").point(lambda v: max(0, min(255, int((v - 50) * 2.6))))
+        r, g, b, _ = im.split()
+        # un-premultiply the edge pixels so the fringe keeps the logo colour instead of turning dark
+        im = Image.merge("RGBA", (r, g, b, mx))
+        solid = Image.new("RGBA", im.size, (196, 160, 72, 255))
+        solid.putalpha(mx)
+        im = solid
+    return im
 
 
 def autocrop(im: Image.Image) -> Image.Image:
@@ -46,25 +63,31 @@ def main(out: Path):
     d.text((MARGIN, 420), "Join the brands, leagues and creators already on board:", font=font("figtree-700", 30),
            fill=ON_DARK)
 
-    cols, gap = 2, 22
-    tw = (W - 2 * MARGIN - gap) / cols
-    th = 120
-    top = 500
-    for i, (fn, dark, rnd) in enumerate(PARTNERS):
-        tx = MARGIN + (i % cols) * (tw + gap)
-        ty = top + (i // cols) * (th + gap)
-        d.rounded_rectangle([tx, ty, tx + tw, ty + th], radius=14, fill=(30, 30, 30) if dark else WHITE)
-        im = autocrop(Image.open(P / fn).convert("RGBA"))
-        box = (tw * 0.55, th * 0.72) if not rnd else (th - 20, th - 20)
-        im.thumbnail((int(box[0]), int(box[1])), Image.LANCZOS)
-        if im.height < box[1] * 0.7 and im.width < box[0] * 0.7:  # small source logo: scale up a bit
-            k = min(box[0] / im.width, box[1] / im.height) * 0.85
-            im = im.resize((int(im.width * k), int(im.height * k)), Image.LANCZOS)
-        if rnd:
-            m = Image.new("L", im.size, 0)
-            ImageDraw.Draw(m).ellipse([0, 0, im.width - 1, im.height - 1], fill=255)
-            im.putalpha(m)
-        canvas.alpha_composite(im, (int(tx + (tw - im.width) / 2), int(ty + (th - im.height) / 2)))
+    gap, th, y = 18, 140, 486
+    for row in ROWS:
+        n = sum(len(files) for _, files in row)
+        tw = (W - 2 * MARGIN - (n - 1) * gap) / n
+        x = MARGIN
+        for label, files in row:
+            seg_w = len(files) * tw + (len(files) - 1) * gap
+            d.text((x, y + 20), label, font=font("figtree-800", 22), fill=RED_SOFT, anchor="ls")
+            d.line([(x, y + 32), (x + seg_w, y + 32)], fill=PETROL_LINE, width=2)
+            for fn, rnd in files:
+                ty = y + 46
+                d.rounded_rectangle([x, ty, x + tw, ty + th], radius=14, fill=WHITE)
+                im = knock_out_black(autocrop(Image.open(P / fn).convert("RGBA")))
+                box = (tw * 0.62, th * 0.62) if not rnd else (th - 22, th - 22)
+                im.thumbnail((int(box[0]), int(box[1])), Image.LANCZOS)
+                if im.height < box[1] * 0.7 and im.width < box[0] * 0.7:
+                    k = min(box[0] / im.width, box[1] / im.height) * 0.85
+                    im = im.resize((int(im.width * k), int(im.height * k)), Image.LANCZOS)
+                if rnd:
+                    m = Image.new("L", im.size, 0)
+                    ImageDraw.Draw(m).ellipse([0, 0, im.width - 1, im.height - 1], fill=255)
+                    im.putalpha(m)
+                canvas.alpha_composite(im, (int(x + (tw - im.width) / 2), int(ty + (th - im.height) / 2)))
+                x += tw + gap
+        y += 46 + th + 40
 
     draw_footer(d, H - 132, "BECOME A PARTNER")
     canvas.convert("RGB").save(out, "PNG", optimize=True)
