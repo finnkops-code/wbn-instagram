@@ -16,7 +16,7 @@ jobs:
         with: {python-version: "3.12"}
       - run: pip install requests
       - run: pip install beautifulsoup4
-      - run: if [ "${{ inputs.n }}" = "pages" ]; then python tools/fetch_images.py; elif [ "${{ inputs.n }}" = "npb" ]; then python tools/fetch_npb_photos.py; elif [ "${{ inputs.n }}" = "potw" ]; then pip install -q -r requirements.txt && python potw_run.py dry "${{ inputs.end }}"; else python tools/potw_probe.py "${{ inputs.start }}" "${{ inputs.end }}" "${{ inputs.n }}"; fi
+      - run: if [ "${{ inputs.n }}" = "pages" ]; then python tools/fetch_images.py; elif [ "${{ inputs.n }}" = "mlb" ]; then python tools/fetch_mlb_headshots.py; elif [ "${{ inputs.n }}" = "npb" ]; then python tools/fetch_npb_photos.py; elif [ "${{ inputs.n }}" = "potw" ]; then pip install -q -r requirements.txt && python potw_run.py dry "${{ inputs.end }}"; else python tools/potw_probe.py "${{ inputs.start }}" "${{ inputs.end }}" "${{ inputs.n }}"; fi
       - run: |
           git config user.name "wbn-instagram-bot"; git config user.email "actions@users.noreply.github.com"
           git add probe/ slides/ assets/potw/ && (git diff --cached --quiet || (git commit -m "POTW probe" && git pull --rebase -q && git push))
