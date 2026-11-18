@@ -69,3 +69,7 @@ Werkt de pagina *API setup with Unified login* niet, dan kan de bot ook via de a
 2. Haal een **page access token** op (Graph API Explorer → permissies `instagram_basic`, `instagram_content_publish`, `pages_show_list`, `pages_read_engagement`, `business_management` → long-lived token → page token). Een page token van een long-lived user token verloopt niet.
 3. Voeg in de Graph API Explorer ook `pages_manage_posts` toe als je dezelfde post op Facebook wilt (foto + caption met klikbare artikellink). Zonder die permissie post de bot alleen op Instagram.
 4. Zet in GitHub: secret `IG_ACCESS_TOKEN` = page token, secret `IG_USER_ID` = Instagram business account-ID, en onder *Variables* `IG_API_ROUTE` = `facebook`. `GH_PAT` is dan niet nodig.
+
+## Teamprijzen en selecties (vast format)
+
+Gold Gloves, Golden Gloves, Defensive Awards, All-Star-/All-League-teams, Best Nine en All-MLB krijgen automatisch het vaste "veld"-format (`team_award.py`): een cover met de artikelfoto en daarna per groep (AL/NL, Central/Pacific, First/Second Team) alle winnaars op hun positie op een honkbalveld, met officiële portretfoto's (MLB Stats API, npb.jp, koreabaseball.com). Meerdere pitchers krijgen een eigen slide; DH/utility staat naast de thuisplaat. Geen foto te vinden? Dan het teamlogo. Een foto vastzetten kan in `player_photos.json` (naam → foto-URL). Dit gebeurt zowel bij automatische keuzes als bij `prepare-url`.

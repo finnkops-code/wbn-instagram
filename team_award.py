@@ -242,13 +242,17 @@ def kbo_photo(name, team=""):
     if not ko:
         return None
     u = "https://www.koreabaseball.com/Player/Search.aspx"
-    s = BeautifulSoup(requests.get(u, params={"searchWord": ko}, headers=UA, timeout=30).content, "html.parser")
-    rows = []
-    for tr in s.select("table tr"):
-        a = tr.find("a", href=re.compile("playerId", re.I))
-        if a:
-            rows.append((tr.get_text(" ", strip=True), a["href"]))
-    hit = next((r for r in rows if team_ko and team_ko in r[0]), rows[0] if len(rows) == 1 else None)
+    hit = None
+    for q in dict.fromkeys([ko, ko.split(" ")[-1]]):  # foreign players are registered by surname only (에레디아)
+        s = BeautifulSoup(requests.get(u, params={"searchWord": q}, headers=UA, timeout=30).content, "html.parser")
+        rows = []
+        for tr in s.select("table tr"):
+            a = tr.find("a", href=re.compile("playerId", re.I))
+            if a:
+                rows.append((tr.get_text(" ", strip=True), a["href"]))
+        hit = next((r for r in rows if team_ko and team_ko in r[0]), rows[0] if len(rows) == 1 else None)
+        if hit:
+            break
     if not hit:
         return None
     pid = re.search(r"playerId=(\d+)", hit[1], re.I)
@@ -278,11 +282,17 @@ def team_logo(team, league):
     return None
 
 
+OVERRIDES_FILE = ROOT / "player_photos.json"
+
+
 def photo_for(w, league):
-    """Square headshot (RGBA) or None. Order: official league source by league, fallback team logo."""
+    """Square headshot (RGBA) or None. Order: player_photos.json override, official league source, team logo."""
     src = None
+    overrides = json.loads(OVERRIDES_FILE.read_text(encoding="utf-8")) if OVERRIDES_FILE.exists() else {}
     try:
-        if league in ("npb", "npbfarm"):
+        if overrides.get(w["name"]):
+            src = overrides[w["name"]]
+        elif league in ("npb", "npbfarm"):
             src = npb_photo(w["name"])
         elif league == "kbo":
             src = kbo_photo(w["name"], w["team"])
