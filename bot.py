@@ -519,7 +519,8 @@ def render(art: dict, out_path: Path) -> str:
     src = Image.open(BytesIO(get(art["image"]).content)).convert("RGB")
     solid_from = ky + 10
     photo_h = max(PHOTO_H, solid_from)
-    canvas.paste(cover(src, W, photo_h), (0, 0))
+    # portrait/square article photos: align centre-top so heads aren't cut off; landscape keeps the default
+    canvas.paste(cover(src, W, photo_h, focus_y=0.0 if src.height >= src.width else 0.35), (0, 0))
     canvas = canvas.convert("RGBA")
     canvas.alpha_composite(vertical_gradient(W, 220, (0, 0, 0), 150, 0, ease=1.0), (0, 0))
     fade = 380
