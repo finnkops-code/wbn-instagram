@@ -201,7 +201,7 @@ def npb_photo(name):
     idx = npb_index()
     page = idx.get(norm(f"{last}, {first}")) or idx.get(norm(f"{last} {first}")) or idx.get(norm(name))
     if not page and "o" in last.lower():  # Oyama / Ohyama style romanisation
-        page = idx.get(norm(f"{last.replace('o', 'oh', 1)} {first}"))
+        page = idx.get(norm(f"{last.lower().replace('o', 'oh', 1)} {first}"))
     if not page:
         return None
     s = BeautifulSoup(requests.get(page, headers=UA, timeout=30).content, "html.parser")
@@ -209,25 +209,50 @@ def npb_photo(name):
     return urljoin(page, img["src"]) if img else None
 
 
-def kbo_photo(name):
-    u = "https://eng.koreabaseball.com/Teams/PlayerSearch.aspx"
-    sess = requests.Session()
-    s = BeautifulSoup(sess.get(u, headers=UA, timeout=30).content, "html.parser")
-    form = {i["name"]: i.get("value", "") for i in s.select("input[name]")}
-    box = next((k for k in form if k.endswith("txtPlayerSearch")), None)
-    btn = s.find("a", href=re.compile("btnPlayerSearch"))
-    if not box or not btn:
-        return None
-    target = re.search(r"__doPostBack\('([^']+)'", btn["href"].replace("&#39;", "'"))
-    for q in (name, name.replace("-", ""), name.split(" ")[-1]):
-        form[box] = q
-        form["__EVENTTARGET"] = target.group(1) if target else ""
-        r = sess.post(u, data=form, headers=UA, timeout=30)
-        codes = re.findall(r"pcode=(\d+)", r.text)
-        if codes:
-            from datetime import datetime
-            return f"https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/{datetime.now().year}/{codes[0]}.jpg"
+KBO_TEAM_KO = {"doosan": "두산", "hanwha": "한화", "lg": "LG", "ssg": "SSG", "kia": "KIA", "samsung": "삼성", "kt": "KT",
+               "nc": "NC", "lotte": "롯데", "kiwoom": "키움"}
+
+
+def hangul_name(name):
+    """Korean spelling of a player's name via the Korean-language link of his English Wikipedia page."""
+    api = "https://en.wikipedia.org/w/api.php"
+    hdr = {"User-Agent": "WBN-bot/1.0 (https://worldbaseballnews.org)"}
+    r = requests.get(api, params={"action": "query", "list": "search", "srsearch": f"{name} baseball", "srlimit": 3,
+                                  "format": "json"}, headers=hdr, timeout=30).json()
+    for hit in r.get("query", {}).get("search", []):
+        if norm(name).split(" ")[0] not in norm(hit["title"]):
+            continue
+        q = requests.get(api, params={"action": "query", "titles": hit["title"], "prop": "langlinks|extracts",
+                                      "lllang": "ko", "exintro": 1, "explaintext": 1, "redirects": 1,
+                                      "format": "json"}, headers=hdr, timeout=30).json()
+        page = next(iter(q["query"]["pages"].values()))
+        ll = page.get("langlinks") or []
+        if ll:
+            return re.sub(r"\s*\(.*\)$", "", ll[0]["*"]).strip()
+        m = re.search(r"[\uac00-\ud7a3]{2,4}", page.get("extract", ""))
+        if m:
+            return m.group(0)
     return None
+
+
+def kbo_photo(name, team=""):
+    from datetime import datetime
+    ko = hangul_name(name)
+    team_ko = KBO_TEAM_KO.get(norm(team).split(" ")[0], "")
+    if not ko:
+        return None
+    u = "https://www.koreabaseball.com/Player/Search.aspx"
+    s = BeautifulSoup(requests.get(u, params={"searchWord": ko}, headers=UA, timeout=30).content, "html.parser")
+    rows = []
+    for tr in s.select("table tr"):
+        a = tr.find("a", href=re.compile("playerId", re.I))
+        if a:
+            rows.append((tr.get_text(" ", strip=True), a["href"]))
+    hit = next((r for r in rows if team_ko and team_ko in r[0]), rows[0] if len(rows) == 1 else None)
+    if not hit:
+        return None
+    pid = re.search(r"playerId=(\d+)", hit[1], re.I)
+    return f"https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/{datetime.now().year}/{pid.group(1)}.jpg" if pid else None
 
 
 def mlb_photo(name):
@@ -260,7 +285,7 @@ def photo_for(w, league):
         if league in ("npb", "npbfarm"):
             src = npb_photo(w["name"])
         elif league == "kbo":
-            src = kbo_photo(w["name"])
+            src = kbo_photo(w["name"], w["team"])
         elif league in CFG["potw"]["statsapi_leagues"]:
             src = mlb_photo(w["name"])
     except Exception as e:
