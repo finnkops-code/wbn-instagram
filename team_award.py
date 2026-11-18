@@ -64,7 +64,8 @@ NPB_SHORT = {"DeNA": "DeNA", "Seibu": "Seibu", "SoftBank": "SoftBank", "Rakuten"
 
 def norm(s: str) -> str:
     s = unicodedata.normalize("NFD", s or "")
-    return re.sub(r"[^a-z0-9 ]+", " ", "".join(c for c in s if unicodedata.category(c) != "Mn").lower()).strip()
+    s = re.sub(r"[^a-z0-9 ]+", " ", "".join(c for c in s if unicodedata.category(c) != "Mn").lower())
+    return re.sub(r"\s+", " ", s).strip()
 
 
 def slug(s: str) -> str:
@@ -579,8 +580,8 @@ def build(url: str, out_dir: Path, league: str | None = None) -> dict | None:
     media = ((post.get("_embedded") or {}).get("wp:featuredmedia") or [{}])[0].get("source_url")
     words = award_name.split(" ")
     big = award_name if len(award_name) <= 16 else award_name
-    subtitle = {"🧤": f"The {lab}'s best defenders, position by position.",
-                "⭐": f"The {lab}'s best players, position by position."}[emoji]
+    subtitle = {"🧤": f"{lab}'s best defenders, position by position.",
+                "⭐": f"{lab}'s best players, position by position."}[emoji]
     cover_f = out_dir / f"{slug_}-1.jpg"
     cover(cover_f, media, f"{lab} · {bot.datetime.now(bot.TZ).strftime('%B %-d, %Y').upper()}",
           (f"{year} {lab}", big), league, stats[:3], subtitle)
