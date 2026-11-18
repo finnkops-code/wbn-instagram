@@ -1,0 +1,959 @@
+<!-- 200 https://eng.koreabaseball.com/ -->
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head id="Head1"><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta http-equiv="x-ua-compatible" content="IE=9" /><title>
+	KBO
+</title><link rel="shortcut icon" type="image/x-icon" href="/images/common/favicon.ico" />
+	<link rel="stylesheet" type="text/css" href="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/min/css/common.min.css?version=20251030" />
+	<link rel="stylesheet" type="text/css" href="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/css/font.css?version=20251030"  crossorigin="anonymous"/>
+	<link rel="stylesheet" type="text/css" href="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/min/css/jquery-ui.min.css?version=20251030"/>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.js"></script>
+	<script type="text/javascript" src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/min/js/common.min.js?version=20241219"></script>
+	<script type="text/javascript" src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/min/js/jquery-ui.min.js?version=20241219"></script>
+    
+
+
+<link type="text/css" rel="stylesheet" href="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/min/css/jquery.mCustomScrollbar.min.css?version=20251030" />
+<!-- <script type="text/javascript" src="/js/rolling.js"></script> -->
+<script type="text/javascript" src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/min/js/jquery.mCustomScrollbar_inner.min.js?version=20241219"></script>
+<script type="text/javascript" src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/min/js/jquery.mCustomScrollbar.min.js?version=20241219"></script>
+<script type="text/javascript" src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/min/js/jquery.bxslider.min.js?version=20241219"></script>
+<script type="text/javascript">
+     //<![CDATA[
+
+     jQuery(function ($) {
+         $('.calendar').mouseenter(function () {
+             $("#srch_bar .srch_box .srch_top input, #contents .selec_day ul li.cal_date h3, #contents .selec_day ul li.cal_date p, #contents .selec_day ul li.cal_date span, #contents .selec_day ul li.cal_date img, #contents .selec_day ul li.cal_date a, #footer .copyright p, #footer .copyright img").attr("src", "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/common/btn_cal_on.png");
+         });
+
+         $('.calendar').mouseleave(function () {
+             $("#srch_bar .srch_box .srch_top input, #contents .selec_day ul li.cal_date h3, #contents .selec_day ul li.cal_date p, #contents .selec_day ul li.cal_date span, #contents .selec_day ul li.cal_date img, #contents .selec_day ul li.cal_date a, #footer .copyright p, #footer .copyright img").attr("src", "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/common/btn_cal_off.png");
+         });
+     });
+
+     $(document).ready(function () {
+         $("#cphContainer_cphContainer_cphContent_txtSearchDate").datepicker({
+             showOn: 'button',
+             buttonImageOnly: true,
+             buttonImage: "https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/common/btn_cal_off.png",
+             buttonText: "달력",
+             dateFormat: "yymmdd",
+             minDate: new Date("2008/03/01"),
+             beforeShow: function (input) {
+                 var i_offset = $(input).offset(); //클릭된 input의 위치값 체크
+                 setTimeout(function () {
+                     $('#ui-datepicker-div').css({ 'top': 203, 'bottom': '', 'left': i_offset.left - 154 });
+                 })
+             },
+             onSelect: function (dateText, inst) {
+                 setSchedule(dateText.replace('-', '').substring(0, 10), "CALENDAR");
+             }
+         });
+         //getDownBanner();	//메인페이지 스폰서 통일
+     });
+
+	function setSchedule(gameDate, flag) {
+        
+
+         $.ajax({
+             type: "post",
+             url: "/Schedule/MainSchedule.aspx",
+             dataType: "html",
+             data: "gameDate=" + gameDate + "&flag=" + flag,
+             error: function (e) { },
+             success: function (data) {
+                 $("#schedule1").html($(data).find("#schedule1").html());
+                 $("#schedule2").html($(data).find("#schedule2").html());
+                 $("#schedule3").html($(data).find("#schedule3").html());
+                 document.getElementById("cphContainer_cphContainer_cphContent_txtCalendarDate").value = $(data).find('#hdDate').val();
+                 document.getElementById("cphContainer_cphContainer_cphContent_txtSearchDate").value = $(data).find('#hdDate').val();
+				 document.getElementById("cphContainer_cphContainer_cphContent_hdRegularDate").value = $(data).find("#hdViewDate").val();
+
+                 var preDate =  $(data).find("#hdDatePre").val();
+                 var nextDate = $(data).find("#hdDateNext").val();
+
+                 $(".prev").attr("href", `javascript:setSchedule(${preDate},'PRE');`)
+                 $(".next").attr("href", `javascript:setSchedule(${nextDate},'NEXT');`)
+             }
+         });
+    }
+
+    // 하단배너 
+    function getDownBanner() {
+        var request = $.ajax({
+            type: "post"
+            , url: "/ws/Main.asmx/GetMainBannerList"
+            , dataType: "json"
+            , data: {
+                bnSc: 6
+                , listCn: 1
+            }
+            , error: ajaxFailed
+            , async: true
+        });
+
+        request.done(function (data) {
+            if (data.code == "100") {
+                document.getElementById('newBanner').setAttribute('href', data.row[0].URL_LK);
+                document.getElementById('newBanner').childNodes[1].setAttribute('src', data.row[0].IMG_LK);
+            }
+        });
+    }
+     //]]>
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+    });
+</script>
+<style type="text/css">
+	#contents .sponsor .col2 .sponsor-list.row2 {margin-top:2px}
+	#contents .sponsor .col2 .sponsor-list.row2 li {border:1px solid ;box-sizing:border-box;}
+	#contents .sponsor .col2 .sponsor-list.row2 li a {display:block;}
+	#contents .sponsor .col2 .sponsor-list.row2 li img {width:100%;}
+</style>
+
+
+
+    <script type="text/javascript">
+        (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-15700655-22', 'auto');
+        ga('send', 'pageview');
+    </script>
+</head>
+<body>
+    <form method="post" action="./" id="mainForm">
+<div class="aspNetHidden">
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwULLTIxNDU4NzQwOTAPZBYCZg9kFgJmD2QWAmYPZBYCAgMPZBYCAgMPZBYCAgEPZBYCAgEPZBYCAgEPDxYCHgRUZXh0BQ1OT1YwNyB+IE5PVjA4ZGRkW9qPbB/v1jkyD5ATIAdWVpYvGoI=" />
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['mainForm'];
+if (!theForm) {
+    theForm = document.mainForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<div class="aspNetHidden">
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="CA0B0334" />
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdAAYnsBCj9pjCecgOWOK10vlUceYdIMmzakwuIln2gI9VfwxWcV9AecRMjDw8N4g/g0iBM7sPkQ/b3/NTG7AuPc+9bzWQ9ElRDPvjVuD4EPma6QK1fUb9SqeMh0YQ+hHY8/m/IrCW6BXSYQTK1T1nF3TtQNlFTg==" />
+</div>
+        
+<script type="text/javascript">
+function playerSearch() {
+    if (document.getElementById("cphHeader_txtPlayerSearch").value == "Player Search") {
+
+    }
+    else {
+        __doPostBack('ctl00$ctl00$ctl00$cphHeader$btnPlayerSearch','');
+    }
+}
+</script>
+<div id="header">
+	<div id="header_top">
+		<div id="srch_bar">
+			<div class="srch_box">
+				<ul>
+					<li><a href="http://www.koreabaseball.com/Default.aspx" class="on"><img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/common/ico_lang_ko.png" alt="korean" />&nbsp;<span>Korean</span></a></li>
+					<li><a href="/Etc/Sitemap.aspx"><span class="last">Sitemap</span></a></li>
+					
+					<li>
+						<fieldset class="srch_player">
+							<input name="ctl00$ctl00$ctl00$cphHeader$txtPlayerSearch" type="text" id="cphHeader_txtPlayerSearch" title="Player Search" value="Player Search" onclick="javascript:this.value=&#39;&#39;;" /><input type="image" title="search" src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/common/btn_srch.png" onclick="javascript:playerSearch();" />
+						</fieldset>
+					</li>
+				</ul>
+			</div>
+		</div> <!--//srch_bar -->
+        <a id="cphHeader_btnPlayerSearch" href="javascript:__doPostBack(&#39;ctl00$ctl00$ctl00$cphHeader$btnPlayerSearch&#39;,&#39;&#39;)"></a>
+		<div id="gnb" class="tabs">
+			<div class="gnb_tit">
+					<a href="/Default.aspx">
+						<img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/common/logo_kbo_k.png" alt="" />
+					</a>
+				
+			</div> <!--//gnb_tit -->
+			<ul class="tabMenu">
+				<li><a id="#tab1" href="/About/AboutKbo.aspx" class="depth_01"><span>ABOUT KBO</span></a></li>
+				<li><a id="#tab2" href="/Teams/TeamInformation.aspx" class="depth_02"><span>TEAMS</span></a></li>
+				<li><a id="#tab3" href="/Schedule/Scoreboard.aspx" class="depth_03"><span>SCHEDULE</span></a></li>
+				<li><a id="#tab4" href="/Standings/TeamStandings.aspx" class="depth_04"><span>STANDINGS</span></a></li>
+				<li class="last"><a id="#tab5" href="/stats/BattingTop5.aspx" class="depth_05"><span>STATS</span></a></li>
+			</ul>
+		</div> <!--//gnb -->
+	</div> <!--//header_top -->
+	<div class="gnb_sub tabContainer">
+		<div id="tab1" class="subarea tab-cont">
+			<ul>
+				<li><a href="/About/aboutkbo.aspx" class="about_01"><span>About KBO</span></a></li>
+				
+				<li class="last"><a href="/About/KBOProcedures.aspx" class="about_03"><span>KBO Procedures</span></a></li>
+				<!--<li class="last"><a href="/About/Changes.aspx" class="about_04"><span>Changes in 2015</span></a></li>-->
+			</ul>
+		</div> <!--//subarea -->
+		<div id="tab2" class="subarea tab-cont">
+			<ul>
+				<li><a href="/Teams/TeamInformation.aspx" class="team_01"><span>Team Information</span></a></li>
+				<li class="last"><a href="/Teams/PlayerSearch.aspx" class="team_02"><span>Player Search</span></a></li>
+			</ul>
+		</div> <!--//subarea -->
+		<div id="tab3" class="subarea tab-cont">
+			<ul>
+				<li><a href="/Schedule/Scoreboard.aspx" class="schedule_01"><span>Scoreboard</span></a></li>
+				<li class="last"><a href="/Schedule/DailySchedule.aspx" class="schedule_02"><span>Daily Schedule</span></a></li>
+			</ul>
+		</div> <!--//subarea -->
+		<div id="tab4" class="subarea tab-cont">
+			<ul>
+				<li class="last"><a href="/Standings/TeamStandings.aspx" class="standing_01"><span>Team Standings</span></a></li>
+			</ul>
+		</div> <!--//subarea -->
+		<div  id="tab5" class="subarea tab-cont">
+			<ul>
+				<li><a href="/stats/BattingTop5.aspx" class="stats_01 active"><span>Batting Top5</span></a></li>
+				<li><a href="/stats/PitchingTop5.aspx" class="stats_02"><span>Pitching Top5</span></a></li>
+				<li><a href="/stats/BattingLeaders.aspx" class="stats_03"><span>Batting Leaders</span></a></li>
+				<li><a href="/stats/PitchingLeaders.aspx" class="stats_04"><span>Pitching Leaders</span></a></li>
+				<li><a href="/stats/BattingByTeams.aspx" class="stats_05"><span>Batting By Teams</span></a></li>
+				<li><a href="/stats/PitchingByTeams.aspx" class="stats_06"><span>Pitching By Teams</span></a></li>
+				<li class="last"><a href="/stats/TeamStats.aspx" class="stats_07"><span>Team Stats</span></a></li>
+			</ul>
+		</div> <!--//subarea -->
+	</div> <!--//gnb_sub -->
+</div> <!--//header -->
+
+        
+
+<div id="container">
+	
+<input type="hidden" name="ctl00$ctl00$ctl00$cphContainer$cphContainer$cphContent$hdRegularDate" id="cphContainer_cphContainer_cphContent_hdRegularDate" value="2026-11-08" />
+
+<div id="contents">
+	<div class="uifix">
+		<div class="tit_schedule">
+			<a href="/Schedule/DailySchedule.aspx"><h2>schedule</h2></a>
+			<div class="selec_day">
+				<ul>
+					<li><a href="javascript:setSchedule('20261107','PRE');" class="prev"><span>prev</span></a></li>
+                    <li class="cal_date">
+                        <h3>
+                            <input name="ctl00$ctl00$ctl00$cphContainer$cphContainer$cphContent$txtCalendarDate" type="text" value="NOV07 ~ NOV08" readonly="readonly" id="cphContainer_cphContainer_cphContent_txtCalendarDate" title="날짜" style="border-width:0px;width:100px;" />
+                            <span style="cursor:pointer;" class="calendar">
+                            <input name="ctl00$ctl00$ctl00$cphContainer$cphContainer$cphContent$txtSearchDate" type="text" readonly="readonly" id="cphContainer_cphContainer_cphContent_txtSearchDate" title="날짜" style="border-width:0px;width:0px;" />
+                            </span>
+                        </h3>
+                    </li>
+					<li>
+                        <a href="javascript:setSchedule('20261108','NEXT');" class="next"><span>next</span></a>
+                    </li>
+				</ul>
+			</div> <!--//selec_day -->
+			<div class="selec_day_detail" id="schedule1">
+                <h4>SAT NOV 7</h4>
+				<p class="tit_play">
+					<span class="p_away">Away</span>
+					<span class="p_home">Home</span>
+				</p>
+				<ul id="schedule_scroll">
+                
+					<!-- 20181204 변경 S -->
+                     <li>
+                        <span class='ebl_s_kt'><span class='emb'><img src='//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/ebl/regular/2026/ebl_s_KT.png' /></span>KT</span>                            
+                        <div class="scoreboard"><span class="score_normal lose">5</span><span class="score_normal">:</span><span class="score_win">10</span></div>                            
+                        <span class='ebl_s_ss'><span class='emb'><img src='//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/ebl/regular/2026/ebl_s_SS.png' /></span>SAMSUNG</span>                            
+                        <a href="/Schedule/Scoreboard.aspx?searchDate=2026-11-07"><span class="score_local">DAEGU</span></a>
+					</li> 
+					<!-- 20181204 변경 E -->
+                
+                    <li></li>
+                
+                    <li></li>
+                
+                    <li></li>
+                
+                    <li></li>
+                
+				</ul>
+			</div> <!--//selec_day_detail -->
+			<div class="selec_day_detail today" id="schedule2"">
+				<div id="datepicker" style="display:block;position:absolute;z-index:100;"></div>
+                <h4>SUN NOV 8</h4>
+				<p class="tit_play">
+					<span class="p_away">Away</span>
+					<span class="p_home">Home</span>
+				</p>
+				<ul id="schedule_scroll2">
+                
+                    <li>
+                        <span class='ebl_s_kt'><span class='emb'><img src='//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/ebl/regular/2026/ebl_s_KT.png' /></span>KT</span>
+                        <div class="scoreboard"><span class="score_normal lose">1</span><span class="score_normal">:</span><span class="score_win">12</span></div>
+                        <span class='ebl_s_ss'><span class='emb'><img src='//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/ebl/regular/2026/ebl_s_SS.png' /></span>SAMSUNG</span>
+                        <a href="/Schedule/Scoreboard.aspx?searchDate=2026-11-08"><span class="score_local">DAEGU</span></a>
+					</li>
+                
+                    <li></li>
+                
+                    <li></li>
+                
+                    <li></li>
+                
+                    <li></li>
+                
+				</ul>
+			</div> <!--//selec_day_detail -->
+			<div class="selec_day_detail" id="schedule3">
+				<h4>SAT NOV 7</h4>
+				<p class="tit_play">
+					<span class="p_away">Away</span>
+					<span class="p_home">Home</span>
+				</p>
+				<ul id="schedule_scroll3">
+                
+                    <li></li>
+                
+                    <li></li>
+                
+                    <li></li>
+                
+                    <li></li>
+                
+                    <li></li>
+                
+				</ul>
+			</div> <!--//selec_day_detail -->
+		</div> <!--//tit_schedule -->
+		<div class="tit_standing">
+			<a href="/Standings/TeamStandings.aspx"><h2>standing</h2></a>
+			<div class="tbl_score">
+				<table>
+					<colgroup>
+                        <col style="width:14%;" />
+						<col style="width:25%;" />
+                        <col style="width:12%;" />
+                        <col style="width:14%;" />
+                        <col style="width:12%;" />
+						<col style="width:23%;" />
+					</colgroup>
+					<thead>
+						<tr>
+                            <th scope="col"><span>RK</span></th>
+							<th scope="col"><span>TEAM</span></th>
+							<th scope="col"><span>W</span></th>
+							<th scope="col"><span>L</span></th>
+							<th scope="col"><span>D</span></th>
+							<th scope="col"><span>PCT</span></th>
+						</tr>
+					</thead>
+					<tbody>
+                        
+                        <tr>
+                            <th class="light_g"><span>1</span></th>
+                            <th class="light_g" scope="row"><span>SAMSUNG</span></th>
+							<td class="light_g"><span>83</span></td>
+							<td class="light_g"><span>58</span></td>
+							<td class="light_g"><span>3</span></td>
+							<td class="light_g"><span>0.589</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <th class=""><span>2</span></th>
+                            <th class="" scope="row"><span>KT</span></th>
+							<td class=""><span>90</span></td>
+							<td class=""><span>49</span></td>
+							<td class=""><span>5</span></td>
+							<td class=""><span>0.647</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <th class="light_g"><span>3</span></th>
+                            <th class="light_g" scope="row"><span>KIA</span></th>
+							<td class="light_g"><span>79</span></td>
+							<td class="light_g"><span>63</span></td>
+							<td class="light_g"><span>2</span></td>
+							<td class="light_g"><span>0.556</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <th class=""><span>4</span></th>
+                            <th class="" scope="row"><span>LG</span></th>
+							<td class=""><span>78</span></td>
+							<td class=""><span>65</span></td>
+							<td class=""><span>1</span></td>
+							<td class=""><span>0.545</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <th class="light_g"><span>5</span></th>
+                            <th class="light_g" scope="row"><span>DOOSAN</span></th>
+							<td class="light_g"><span>73</span></td>
+							<td class="light_g"><span>66</span></td>
+							<td class="light_g"><span>5</span></td>
+							<td class="light_g"><span>0.525</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <th class=""><span>6</span></th>
+                            <th class="" scope="row"><span>SSG</span></th>
+							<td class=""><span>65</span></td>
+							<td class=""><span>74</span></td>
+							<td class=""><span>5</span></td>
+							<td class=""><span>0.468</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <th class="light_g"><span>7</span></th>
+                            <th class="light_g" scope="row"><span>LOTTE</span></th>
+							<td class="light_g"><span>64</span></td>
+							<td class="light_g"><span>77</span></td>
+							<td class="light_g"><span>3</span></td>
+							<td class="light_g"><span>0.454</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <th class=""><span>8</span></th>
+                            <th class="" scope="row"><span>NC</span></th>
+							<td class=""><span>64</span></td>
+							<td class=""><span>78</span></td>
+							<td class=""><span>2</span></td>
+							<td class=""><span>0.451</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <th class="light_g"><span>9</span></th>
+                            <th class="light_g" scope="row"><span>HANWHA</span></th>
+							<td class="light_g"><span>57</span></td>
+							<td class="light_g"><span>83</span></td>
+							<td class="light_g"><span>4</span></td>
+							<td class="light_g"><span>0.407</span></td>
+                        </tr>
+                        
+                        <tr>
+                            <th class=""><span>10</span></th>
+                            <th class="" scope="row"><span>KIWOOM</span></th>
+							<td class=""><span>50</span></td>
+							<td class=""><span>90</span></td>
+							<td class=""><span>4</span></td>
+							<td class=""><span>0.357</span></td>
+                        </tr>
+                        
+					</tbody>
+				</table>
+			</div> <!--//tbl_score -->
+		</div> <!--//tit_standing -->
+	</div> <!--//uifix -->
+
+	<div class="tit_battingleader mt50">
+		<a href="/stats/BattingLeaders.aspx"><h2>batting leaders</h2></a>
+		<div class="uifix">
+			<div class="player_info">
+				<ol>
+					<li class="first">
+						<div class="info_img">
+                            
+                            <a href="/Teams/PlayerInfoHitter/Summary.aspx?pcode=62404">
+							    <img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/small/2026/62404.jpg" onerror="this.src='//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/noimg.png'" alt="KOO Ja Wook" />
+						    </a>
+                            
+						</div>
+						<div class="info_first">
+							<div class="tit_player">
+								<span>AVERAGE</span>
+							</div>
+                            
+							<div class="uifix">
+								<a href="/Teams/PlayerInfoHitter/Summary.aspx?pcode=62404"><span class="info_name"><b>1.</b>  KOO Ja Wook</span></a>
+								<span class="info_score">0.371</span>
+							</div>
+							<span class="info_team">SAMSUNG</span>
+                            
+						</div> <!--//info_first -->
+					</li>
+                    
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoHitter/Summary.aspx?pcode=54529"><span class="info_name"><b>2.</b>  REYES Victor</span></a>
+						        <span class="info_team">LOTTE</span>
+                            </div>
+						    <span class="info_score">0.363</span>
+                        </div>
+					</li>
+                    
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoHitter/Summary.aspx?pcode=66606"><span class="info_name"><b>3.</b>  CHOI Won Jun</span></a>
+						        <span class="info_team">KT</span>
+                            </div>
+						    <span class="info_score">0.356</span>
+                        </div>
+					</li>
+                    
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoHitter/Summary.aspx?pcode=53123"><span class="info_name"><b>4.</b>  DEAN Austin</span></a>
+						        <span class="info_team">LG</span>
+                            </div>
+						    <span class="info_score">0.331</span>
+                        </div>
+					</li>
+                    
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoHitter/Summary.aspx?pcode=67893"><span class="info_name"><b>5.</b>  PARK Seong Han</span></a>
+						        <span class="info_team">SSG</span>
+                            </div>
+						    <span class="info_score">0.330</span>
+                        </div>
+					</li>
+                    
+				</ol>
+			</div> <!--//player_info -->
+			<div class="player_info">
+				<ol>
+					<li class="first">
+						<div class="info_img">
+		                    
+		                    <a href="/Teams/PlayerInfoHitter/Summary.aspx?pcode=52605">
+			                    <img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/small/2026/52605.jpg" onerror="this.src='//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/noimg.png'" alt="KIM Do Yeong" />
+		                    </a>
+		                    
+	                    </div>
+						<div class="info_first">
+							<div class="tit_player">
+								<span>HOME RUNS</span>
+							</div>
+                            
+							<div class="uifix">
+                                <a href="/Teams/PlayerInfoHitter/Summary.aspx?pcode=52605">
+                                    <span class="info_name"><b>1.  </b>KIM Do Yeong</span>
+                                    <span class="info_score">45</span>
+						        </a>
+							</div>
+							<span class="info_team">KIA</span>
+                            
+						</div> <!--//info_first -->
+					</li>
+                    
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoHitter/Summary.aspx?pcode=56034"><span class="info_name"><b>2.</b>  HILLIARD Sam</span></a>
+						        <span class="info_team">KT</span>
+                            </div>
+                            <span class="info_score">44</span>
+                        </div>
+					</li>
+                    
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoHitter/Summary.aspx?pcode=53123"><span class="info_name"><b>3.</b>  DEAN Austin</span></a>
+						        <span class="info_team">LG</span>
+                            </div>
+                            <span class="info_score">41</span>
+                        </div>
+					</li>
+                    
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoHitter/Summary.aspx?pcode=68050"><span class="info_name"><b>4.</b>  KANG Baek Ho</span></a>
+						        <span class="info_team">HANWHA</span>
+                            </div>
+                            <span class="info_score">34</span>
+                        </div>
+					</li>
+                    
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoHitter/Summary.aspx?pcode=62947"><span class="info_name"><b>5.</b>  NA Sung Bum</span></a>
+						        <span class="info_team">KIA</span>
+                            </div>
+                            <span class="info_score">31</span>
+                        </div>
+					</li>
+                    
+				</ol>
+			</div> <!--//player_info -->
+			<div class="player_info last">
+				<ol>
+					<li class="first">
+	                    <div class="info_img">
+		                    
+		                    <a href="/Teams/PlayerInfoHitter/Summary.aspx?pcode=56034">
+			                    <img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/small/2026/56034.jpg" onerror="this.src='//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/noimg.png'" alt="HILLIARD Sam" />
+		                    </a>
+		                    
+	                    </div>
+	                    <div class="info_first">
+		                    <div class="tit_player">
+			                    <span>RBI</span>
+		                    </div>
+                            
+		                    <div class="uifix">
+			                    <a href="/Teams/PlayerInfoHitter/Summary.aspx?pcode=56034">
+				                    <span class="info_name"><b>1.  </b>HILLIARD Sam</span>
+				                    <span class="info_score">139</span>
+			                    </a>
+		                    </div>
+		                    <span class="info_team">KT</span>
+                            
+	                    </div> <!--//info_first -->
+                    </li>
+
+                    
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoHitter/Summary.aspx?pcode=54400"><span class="info_name"><b>2.</b>  DIAZ Lewin</span></a>
+						        <span class="info_team">SAMSUNG</span>
+                            </div>
+                            <span class="info_score">129</span>
+                        </div>
+					</li>
+                    
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoHitter/Summary.aspx?pcode=53123"><span class="info_name"><b>3.</b>  DEAN Austin</span></a>
+						        <span class="info_team">LG</span>
+                            </div>
+                            <span class="info_score">127</span>
+                        </div>
+					</li>
+                    
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoHitter/Summary.aspx?pcode=68050"><span class="info_name"><b>4.</b>  KANG Baek Ho</span></a>
+						        <span class="info_team">HANWHA</span>
+                            </div>
+                            <span class="info_score">118</span>
+                        </div>
+					</li>
+                    
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoHitter/Summary.aspx?pcode=52605"><span class="info_name"><b>4.</b>  KIM Do Yeong</span></a>
+						        <span class="info_team">KIA</span>
+                            </div>
+                            <span class="info_score">118</span>
+                        </div>
+					</li>
+                    
+				</ol>
+			</div> <!--//player_info -->
+		</div> <!--//uifix -->
+	</div> <!--//tit_battingleader -->
+
+	<div class="tit_pitchingleader">
+		<a href="/stats/pitchingLeaders.aspx"><h2>pitching</h2></a>
+		<div class="uifix">
+			<div class="player_info">
+				<ol>
+					<li class="first">
+	                    <div class="info_img">
+		                    
+		                    <a href="/Teams/PlayerInfoPitcher/Summary.aspx?pcode=68220">
+			                    <img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/small/2026/68220.jpg" onerror="this.src='//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/noimg.png'" alt="GWAK Been" />
+		                    </a>
+		                    
+	                    </div>
+	                    <div class="info_first">
+		                    <div class="tit_player">
+			                    <span>EARNED RUN AVERAGE</span>
+		                    </div>
+                            
+		                    <div class="uifix">
+			                    <a href="/Teams/PlayerInfoPitcher/Summary.aspx?pcode=68220"><span class="info_name"><b>1.</b>  GWAK Been</span></a>
+			                    <span class="info_score">2.24</span>
+		                    </div>
+		                    <span class="info_team">DOOSAN</span>
+                            
+	                    </div> <!--//info_first -->
+                    </li>
+                    
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoPitcher/Summary.aspx?pcode=55633"><span class="info_name"><b>2.</b>  OLLER Adam</span></a>
+						        <span class="info_team">KIA</span>
+                            </div>
+                            <span class="info_score">3.13</span>
+                        </div>
+					</li>
+                    
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoPitcher/Summary.aspx?pcode=55268"><span class="info_name"><b>3.</b>  CHOI Min Seok</span></a>
+						        <span class="info_team">DOOSAN</span>
+                            </div>
+                            <span class="info_score">3.20</span>
+                        </div>
+					</li>
+                    
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoPitcher/Summary.aspx?pcode=64001"><span class="info_name"><b>4.</b>  KO Young Pyo</span></a>
+						        <span class="info_team">KT</span>
+                            </div>
+                            <span class="info_score">3.28</span>
+                        </div>
+					</li>
+                    
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoPitcher/Summary.aspx?pcode=54640"><span class="info_name"><b>5.</b>  NAILE James</span></a>
+						        <span class="info_team">KIA</span>
+                            </div>
+                            <span class="info_score">3.49</span>
+                        </div>
+					</li>
+                    
+				</ol>
+			</div> <!--//player_info -->
+			<div class="player_info">
+				<ol>
+					<li class="first">
+	                    <div class="info_img">
+		                    
+		                    <a href="/Teams/PlayerInfoPitcher/Summary.aspx?pcode=61101">
+			                    <img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/small/2026/61101.jpg" onerror="this.src='//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/noimg.png'" alt="IM Chan Kyu" />
+		                    </a>
+		                    
+	                    </div>
+	                    <div class="info_first">
+		                    <div class="tit_player">
+			                    <span>WINS</span>
+		                    </div>
+                            
+		                    <div class="uifix">
+			                    <a href="/Teams/PlayerInfoPitcher/Summary.aspx?pcode=61101"><span class="info_name"><b>1.</b>  IM Chan Kyu</span></a>
+			                    <span class="info_score">15</span>
+		                    </div>
+		                    <span class="info_team">LG</span>
+                            
+	                    </div> <!--//info_first -->
+                    </li>
+                     
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoPitcher/Summary.aspx?pcode=64001"><span class="info_name"><b>1.</b>  KO Young Pyo</span></a>
+						        <span class="info_team">KT</span>
+                            </div>
+                            <span class="info_score">15</span>
+                        </div>
+					</li>
+                    
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoPitcher/Summary.aspx?pcode=55268"><span class="info_name"><b>3.</b>  CHOI Min Seok</span></a>
+						        <span class="info_team">DOOSAN</span>
+                            </div>
+                            <span class="info_score">14</span>
+                        </div>
+					</li>
+                    
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoPitcher/Summary.aspx?pcode=54640"><span class="info_name"><b>4.</b>  NAILE James</span></a>
+						        <span class="info_team">KIA</span>
+                            </div>
+                            <span class="info_score">13</span>
+                        </div>
+					</li>
+                    
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoPitcher/Summary.aspx?pcode=55130"><span class="info_name"><b>5.</b>  TOLHURST Anders</span></a>
+						        <span class="info_team">LG</span>
+                            </div>
+                            <span class="info_score">12</span>
+                        </div>
+					</li>
+                    
+				</ol>
+			</div> <!--//player_info -->
+			<div class="player_info last">
+				<ol>
+					<li class="first">
+	                    <div class="info_img">
+		                    
+		                    <a href="/Teams/PlayerInfoPitcher/Summary.aspx?pcode=68220">
+			                    <img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/small/2026/68220.jpg" onerror="this.src='//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/noimg.png'" alt="GWAK Been" />
+		                    </a>
+		                    
+	                    </div>
+	                    <div class="info_first">
+		                    <div class="tit_player">
+			                    <span>STRIKEOUTS</span>
+		                    </div>
+                            
+		                    <div class="uifix">
+			                    <a href="/Teams/PlayerInfoPitcher/Summary.aspx?pcode=68220"><span class="info_name"><b>1.</b>  GWAK Been</span></a>
+			                    <span class="info_score">197</span>
+		                    </div>
+		                    <span class="info_team">DOOSAN</span>
+                            
+	                    </div> <!--//info_first -->
+                    </li>
+                     
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoPitcher/Summary.aspx?pcode=56531"><span class="info_name"><b>2.</b>  RODRIGUEZ Elvin</span></a>
+						        <span class="info_team">LOTTE</span>
+                            </div>
+                            <span class="info_score">186</span>
+                        </div>
+					</li>
+                    
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoPitcher/Summary.aspx?pcode=64001"><span class="info_name"><b>3.</b>  KO Young Pyo</span></a>
+						        <span class="info_team">KT</span>
+                            </div>
+                            <span class="info_score">183</span>
+                        </div>
+					</li>
+                    
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoPitcher/Summary.aspx?pcode=55633"><span class="info_name"><b>4.</b>  OLLER Adam</span></a>
+						        <span class="info_team">KIA</span>
+                            </div>
+                            <span class="info_score">180</span>
+                        </div>
+					</li>
+                    
+					<li class="other">
+						<div class="uifix">
+                            <div class="fl_l">
+                                <a href="/Teams/PlayerInfoPitcher/Summary.aspx?pcode=55903"><span class="info_name"><b>5.</b>  THOMPSON Riley</span></a>
+						        <span class="info_team">NC</span>
+                            </div>
+                            <span class="info_score">162</span>
+                        </div>
+					</li>
+                    
+				</ol>
+			</div> <!--//player_info -->
+		</div> <!--//uifix -->
+	</div> <!--//tit_pitchingleader -->
+
+	<div class="offerBanner">		
+		<div class="sponsor">
+			<ul class="sponsor-list">
+                <li>
+                    <a href="https://www.shinhan.com/index.jsp" target="_blank">
+                        <img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/main/img_spon2022_shinhan.png?ver=0324" alt="신한은행" />
+                    </a>
+                </li>
+                <li>
+                    <a href="http://www.donga-otsuka.co.kr/index.asp" target="_blank">
+                        <img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/main/img_spon2022_donga.png?ver=0324" alt="동아오츠카(포카리스웨트)" />
+                    </a>
+                </li>
+                <li>
+                    <a href="http://www.shell.co.kr/" target="_blank">
+                        <img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/main/img_spon2022_shell.png?ver=0324" alt="쉘힐릭스" />
+                    </a>
+                </li>
+                <li>
+                    <a href="http://ticket.interpark.com/Contents/Sports" target="_blank">
+                        <img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/main/img_spon2023_interpark.png?ver=0324" alt="인터파크" />
+                    </a>
+                </li>
+                <li>
+                    <a href="http://www.hyfresh.co.kr/main.do" target="_blank">
+                        <img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/main/img_spon2022_yakult.png?ver=0324" alt="한국야쿠르트" />
+                    </a>
+                </li>
+                <li>
+                    <a href="https://web.dominos.co.kr/main" target="_blank">
+                        <img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/main/img_spon2022_pizza.png?ver=0324" alt="도미노피자" />
+                    </a>
+                </li>
+                <li>
+                    <a href="http://home.nene.co.kr" target="_blank">
+                        <img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/main/img_spon2022_nenechicken.png?ver=0324" alt="네네치킨" />
+                    </a>
+                </li>
+            </ul>
+		</div>
+	</div> 
+</div> <!--//contents -->
+
+</div> <!--//container -->
+
+
+        
+
+<div id="footer">
+	<div class="kbo_home">
+		<a href="/Default.aspx" title="kbo homepage"><span>KBO</span></a>
+	</div>
+	<div class="ebl">
+		<ul>
+			<li><a href="http://www.tigers.co.kr" class="" target="_blank" title="link title"><img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/ebl/regular/fixed/ebl_ft_HT.png" alt="" /></a></li>
+			<li><a href="http://www.samsunglions.com" class="" target="_blank" title="link title"><img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/ebl/regular/fixed/ebl_ft_SS.png" alt="" /></a></li>
+			<li><a href="http://www.lgtwins.com" class="" target="_blank" title="link title"><img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/ebl/regular/fixed/ebl_ft_LG.png" alt="" /></a></li>
+			<li><a href="http://www.doosanbears.com" class="" target="_blank" title="link title"><img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/ebl/regular/fixed/ebl_ft_OB.png" alt="" /></a></li>
+			<li><a href="http://ktwiz.co.kr"  class="" target="_blank" title="link title"><img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/ebl/regular/fixed/ebl_ft_KT.png" alt="" /></a></li>
+			<li><a href="http://www.ssglanders.com" class="" target="_blank" title="link title"><img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/ebl/regular/fixed/ebl_ft_SK.png" alt="" /></a></li>
+            <li><a href="http://www.giantsclub.com" class="" target="_blank" title="link title"><img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/ebl/regular/fixed/ebl_ft_LT.png" alt="" /></a></li>
+			<li class="last"><a href="http://www.hanwhaeagles.co.kr" class="" target="_blank" title="link title"><img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/ebl/regular/fixed/ebl_ft_HH.png" alt="" /></a></li>        
+			<li><a href="http://www.ncdinos.com" class="" target="_blank" title="link title"><img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/ebl/regular/fixed/ebl_ft_NC.png" alt="" /></a></li>
+			<li><a href="http://www.heroesbaseball.co.kr" class="" target="_blank" title="link title"><img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/ebl/regular/fixed/ebl_ft_WO.png" alt="" /></a></li>
+		</ul>
+		<p>&copy; Korea Baseball Organization, 278 Gangnam-daero, Gangnam-gu, Seoul, Korea 06258 TEL 02) 3460-4600</p>
+		<p>This is the official KBO website for our fans operated by sports2i co. LTD. </p>
+		<p>
+			Copyright&copy; 2010~2016 KBO. All rights reserved.
+			<img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/common/ico_w3c.png" alt="W3C 웹표준XHTML 1.0 Transitional준수" />
+		</p>
+	</div> <!--//ebl -->
+	<div class="verisign">
+		<img src="//6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/eng/resources/images/common/ico_verisign.png" alt="" />
+	</div>
+</div> <!--//footer -->
+
+
+    </form>
+</body>
+</html>
