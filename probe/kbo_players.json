@@ -1,0 +1,72 @@
+[
+ {
+  "name": "Kwak Bin",
+  "ko": "곽빈",
+  "team": "Doosan",
+  "team_ko": "두산",
+  "slug": "kwak-bin"
+ },
+ {
+  "name": "Heo In-seo",
+  "ko": "허인서",
+  "team": "Hanwha",
+  "team_ko": "한화",
+  "slug": "heo-in-seo"
+ },
+ {
+  "name": "Austin Dean",
+  "ko": "오스틴",
+  "team": "LG",
+  "team_ko": "LG",
+  "slug": "austin-dean"
+ },
+ {
+  "name": "Jung Jun-jae",
+  "ko": "정준재",
+  "team": "SSG",
+  "team_ko": "SSG",
+  "slug": "jung-jun-jae"
+ },
+ {
+  "name": "Kim Do-yeong",
+  "ko": "김도영",
+  "team": "KIA",
+  "team_ko": "KIA",
+  "slug": "kim-do-yeong"
+ },
+ {
+  "name": "Park Seong-han",
+  "ko": "박성한",
+  "team": "SSG",
+  "team_ko": "SSG",
+  "slug": "park-seong-han"
+ },
+ {
+  "name": "Guillermo Heredia",
+  "ko": "에레디아",
+  "team": "SSG",
+  "team_ko": "SSG",
+  "slug": "guillermo-heredia"
+ },
+ {
+  "name": "Park Hae-min",
+  "ko": "박해민",
+  "team": "LG",
+  "team_ko": "LG",
+  "slug": "park-hae-min"
+ },
+ {
+  "name": "Kim Seong-yoon",
+  "ko": "김성윤",
+  "team": "Samsung",
+  "team_ko": "삼성",
+  "slug": "kim-seong-yoon"
+ },
+ {
+  "name": "Koo Bon-hyeok",
+  "ko": "구본혁",
+  "team": "LG",
+  "team_ko": "LG",
+  "slug": "koo-bon-hyeok"
+ }
+]
