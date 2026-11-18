@@ -921,6 +921,10 @@ def cmd_prepare():
         log("No new big headline to post.")
         gh_output("has_post", "false")
         return
+    import team_award
+    if team_award.is_team_award(art.get("headline", "")) and team_award.prepare_pending(art["url"], art["slot"]):
+        log(f"Prepared team-award carousel: [{art['slot']}] {art['headline']}")
+        return
     slug = slug_of(art["url"])
     img = POSTS_DIR / f"{slug}.jpg"
     title = render(art, img)
@@ -1145,6 +1149,10 @@ def cmd_prepare_url(url: str):
     lg = league_slug(url)
     art = {"url": url, "slot": "manual", "league_label": CFG["league_labels"].get(lg), "home_title": None,
            **article_meta(url)}
+    import team_award
+    if not os.environ.get("SLIDES", "").strip() and team_award.is_team_award(art.get("headline", "")) \
+            and team_award.prepare_pending(url, "manual", collabs):
+        return
     img = POSTS_DIR / f"{slug_of(url)}.jpg"
     title = render(art, img)
     extra = []
