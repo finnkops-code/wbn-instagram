@@ -1,40 +1,36 @@
 <!DOCTYPE html><html><head><meta charset="utf-8"><style>
-@font-face{font-family:Oswald;font-weight:700;src:url(../../fonts/oswald-700.ttf)}
 @font-face{font-family:Oswald;font-weight:600;src:url(../../fonts/oswald-600.ttf)}
+@font-face{font-family:Figtree;font-weight:800;src:url(../../fonts/figtree-800.ttf)}
 body{margin:0;background:transparent}</style></head><body><svg id="logo" xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080">
 <defs>
- <linearGradient id="goldh" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9C7428"/><stop offset=".22" stop-color="#F6DC93"/><stop offset=".5" stop-color="#DEB860"/><stop offset=".8" stop-color="#B98C34"/><stop offset="1" stop-color="#8A6420"/></linearGradient>
- <linearGradient id="goldv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6DC93"/><stop offset=".6" stop-color="#DEB860"/><stop offset="1" stop-color="#A97F2C"/></linearGradient>
- <linearGradient id="inner" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7A561A"/><stop offset="1" stop-color="#B98C34"/></linearGradient>
- <linearGradient id="plinth" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B4560"/><stop offset="1" stop-color="#022636"/></linearGradient>
+ <mask id="cut">
+  <rect width="1080" height="1080" fill="#fff"/>
+  <!-- baseball seams cut out of the cup (negative space) -->
+  <path d="M 422,190 C 478,270 478,360 436,440" fill="none" stroke="#000" stroke-width="14" stroke-linecap="round"/>
+  <path d="M 658,190 C 602,270 602,360 644,440" fill="none" stroke="#000" stroke-width="14" stroke-linecap="round"/>
+  <g stroke="#000" stroke-width="9" stroke-linecap="round">
+   <line x1="426" y1="224" x2="454" y2="236"/><line x1="654" y1="224" x2="626" y2="236"/><line x1="439" y1="266" x2="467" y2="278"/><line x1="641" y1="266" x2="613" y2="278"/><line x1="446" y1="309" x2="474" y2="321"/><line x1="634" y1="309" x2="606" y2="321"/><line x1="446" y1="352" x2="474" y2="364"/><line x1="634" y1="352" x2="606" y2="364"/><line x1="440" y1="394" x2="468" y2="406"/><line x1="640" y1="394" x2="612" y2="406"/>
+  </g>
+  <rect x="325" y="150" width="430" height="10" fill="#000"/>
+ </mask>
 </defs>
-<!-- stars -->
-<polygon fill="url(#goldv)" points="540.0,52.0 550.0,78.2 578.0,79.6 556.2,97.3 563.5,124.4 540.0,109.0 516.5,124.4 523.8,97.3 502.0,79.6 530.0,78.2"/><polygon fill="url(#goldv)" points="452.0,96.0 457.3,108.7 471.0,109.8 460.6,118.8 463.8,132.2 452.0,125.0 440.2,132.2 443.4,118.8 433.0,109.8 446.7,108.7"/><polygon fill="url(#goldv)" points="628.0,96.0 633.3,108.7 647.0,109.8 636.6,118.8 639.8,132.2 628.0,125.0 616.2,132.2 619.4,118.8 609.0,109.8 622.7,108.7"/>
-<!-- handles -->
-<path d="M 300,235 C 170,225 150,330 200,395 C 240,445 300,450 345,455" fill="none" stroke="url(#goldv)" stroke-width="30" stroke-linecap="round"/>
-<path d="M 780,235 C 910,225 930,330 880,395 C 840,445 780,450 735,455" fill="none" stroke="url(#goldv)" stroke-width="30" stroke-linecap="round"/>
-<!-- bowl -->
-<path d="M 275,200 C 275,470 375,575 540,590 C 705,575 805,470 805,200 Z" fill="url(#goldh)"/>
-<path d="M 330,240 C 335,420 390,520 470,560" fill="none" stroke="#FFF6D8" stroke-opacity=".55" stroke-width="14" stroke-linecap="round"/>
-<ellipse cx="540" cy="200" rx="265" ry="38" fill="url(#goldv)"/>
-<ellipse cx="540" cy="203" rx="235" ry="26" fill="url(#inner)"/>
-<!-- emblem: baseball in a petrol medallion -->
-<circle cx="540" cy="372" r="112" fill="#03354C" stroke="#F6DC93" stroke-width="6"/>
-<circle cx="540" cy="372" r="92" fill="#FFFFFF"/>
-<clipPath id="bc"><circle cx="540" cy="372" r="92"/></clipPath>
-<g clip-path="url(#bc)" fill="none" stroke="#BD0000" stroke-linecap="round" stroke-linejoin="round">
- <path d="M 478,298 C 518,342 518,402 478,446" stroke-width="5"/><path d="M 497.1,309.4 L 494.7,321.2 L 483.3,317.5" stroke-width="4"/><path d="M 508.5,331.6 L 503.7,342.7 L 493.3,336.7" stroke-width="4"/><path d="M 514.8,355.1 L 507.8,364.8 L 498.9,356.7" stroke-width="4"/><path d="M 515.9,379.1 L 506.9,387.1 L 500.0,377.2" stroke-width="4"/><path d="M 511.7,403.0 L 501.2,408.9 L 496.6,397.8" stroke-width="4"/><path d="M 502.1,426.1 L 490.6,429.7 L 488.4,417.8" stroke-width="4"/>
- <path d="M 602,298 C 562,342 562,402 602,446" stroke-width="5"/><path d="M 596.7,317.5 L 585.3,321.2 L 582.9,309.4" stroke-width="4"/><path d="M 586.7,336.7 L 576.3,342.7 L 571.5,331.6" stroke-width="4"/><path d="M 581.1,356.7 L 572.2,364.8 L 565.2,355.1" stroke-width="4"/><path d="M 580.0,377.2 L 573.1,387.1 L 564.1,379.1" stroke-width="4"/><path d="M 583.4,397.8 L 578.8,408.9 L 568.3,403.0" stroke-width="4"/><path d="M 591.6,417.8 L 589.4,429.7 L 577.9,426.1" stroke-width="4"/>
+<g mask="url(#cut)" fill="#D9B566">
+ <!-- cup: rim + bowl -->
+ <path d="M 310,130 L 770,130 L 770,170 C 770,380 690,480 574,505 L 506,505 C 390,480 310,380 310,170 Z"/>
+ <!-- handles -->
+ <path d="M 310,190 L 248,190 C 222,190 218,216 222,240 C 234,318 272,360 334,388 L 342,366 C 292,342 258,304 248,236 C 246,224 250,214 258,214 L 312,214 Z"/>
+ <path d="M 770,190 L 832,190 C 858,190 862,216 858,240 C 846,318 808,360 746,388 L 738,366 C 788,342 822,304 832,236 C 834,224 830,214 822,214 L 768,214 Z"/>
+ <!-- stem -->
+ <rect x="518" y="500" width="44" height="88"/>
+ <rect x="470" y="584" width="140" height="18" rx="3"/>
+ <!-- base -->
+ <path d="M 420,612 L 660,612 L 680,668 L 400,668 Z"/>
+ <rect x="375" y="676" width="330" height="22" rx="3"/>
 </g>
-<!-- stem -->
-<path d="M 492,585 L 588,585 C 582,630 565,660 566,700 L 514,700 C 515,660 498,630 492,585 Z" fill="url(#goldh)"/>
-<ellipse cx="540" cy="642" rx="52" ry="16" fill="url(#goldv)"/>
-<path d="M 470,700 L 610,700 L 650,752 L 430,752 Z" fill="url(#goldh)"/>
-<rect x="420" y="748" width="240" height="16" rx="4" fill="url(#goldv)"/>
-<!-- plinth with plaque -->
-<rect x="330" y="764" width="420" height="150" rx="10" fill="url(#plinth)" stroke="url(#goldv)" stroke-width="8"/>
-<text x="540" y="818" text-anchor="middle" font-family="Oswald" font-weight="600" font-size="34" letter-spacing="14" fill="#DEB860">WORLD</text>
-<text x="540" y="884" text-anchor="middle" font-family="Oswald" font-weight="700" font-size="54" letter-spacing="2" fill="#FFFFFF">PLAYER OF THE WEEK</text>
-<rect x="300" y="914" width="480" height="18" rx="5" fill="url(#goldh)"/>
-<text x="540" y="1000" text-anchor="middle" font-family="Oswald" font-weight="600" font-size="30" letter-spacing="12" fill="#FFFFFF" fill-opacity=".9">WORLD BASEBALL NEWS</text>
+<!-- type lockup -->
+<line x1="290" y1="776" x2="420" y2="776" stroke="#D9B566" stroke-width="3"/>
+<line x1="660" y1="776" x2="790" y2="776" stroke="#D9B566" stroke-width="3"/>
+<text x="540" y="788" text-anchor="middle" font-family="Figtree" font-weight="800" font-size="34" letter-spacing="16" fill="#D9B566">WORLD</text>
+<text x="540" y="884" text-anchor="middle" font-family="Oswald" font-weight="600" font-size="92" letter-spacing="7" fill="#FFFFFF">PLAYER OF THE WEEK</text>
+<text x="540" y="946" text-anchor="middle" font-family="Figtree" font-weight="800" font-size="22" letter-spacing="11" fill="#FFFFFF" fill-opacity=".55">WORLD BASEBALL NEWS</text>
 </svg></body></html>
