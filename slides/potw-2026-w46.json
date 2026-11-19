@@ -1,0 +1,102 @@
+{
+ "slug": "potw-2026-w46",
+ "week_label": "NOV 9–15, 2026",
+ "first": "Jasson",
+ "last": "Domínguez",
+ "team": "Aguilas Cibaenas",
+ "league": "lidom",
+ "photo": "assets/potw/potw-2026-w46.jpg",
+ "crop": [
+  279,
+  0,
+  920,
+  802
+ ],
+ "v_align": 0.0,
+ "credit": null,
+ "stats": [
+  [
+   ".429",
+   "AVG"
+  ],
+  [
+   "3",
+   "HR"
+  ],
+  [
+   "8",
+   "RBI"
+  ],
+  [
+   "1.536",
+   "OPS"
+  ]
+ ],
+ "games": [
+  {
+   "date": "Mon Nov 9",
+   "opp": "at Tigres del Licey",
+   "line": "0-4 · RBI · BB"
+  },
+  {
+   "date": "Tue Nov 10",
+   "opp": "vs Toros del Este",
+   "line": "2-3 · HR · RBI · 2 BB"
+  },
+  {
+   "date": "Wed Nov 11",
+   "opp": "vs Tigres del Licey",
+   "line": "1-3 · 2B · BB"
+  },
+  {
+   "date": "Thu Nov 12",
+   "opp": "vs Toros del Este",
+   "line": "2-3 · HR · RBI · 2 BB"
+  },
+  {
+   "date": "Fri Nov 13",
+   "opp": "at Gigantes del Cibao",
+   "line": "2-4 · HR · 3 RBI"
+  },
+  {
+   "date": "Sat Nov 14",
+   "opp": "at Toros del Este",
+   "line": "2-4 · 3B · 2 RBI"
+  }
+ ],
+ "highlight": "3 home runs. Best game: 2-3, HR, RBI, 2 BB vs Toros del Este on Tue Nov 10.",
+ "evaluated": "1,205 players · 8 leagues",
+ "race": [
+  {
+   "name": "Jasson Domínguez",
+   "league": "lidom",
+   "line": "9-for-21 · 3 HR · 3B · 8 RBI",
+   "winner": true
+  },
+  {
+   "name": "Angel Reyes",
+   "league": "lvbp",
+   "line": "5-for-11 · 3 HR · 6 RBI"
+  },
+  {
+   "name": "Moises Gutierrez",
+   "league": "lmp",
+   "line": "7-for-17 · 3 HR · 9 RBI"
+  },
+  {
+   "name": "Justin DeCriscio",
+   "league": "afl",
+   "line": "6-for-8 · 3 SB"
+  },
+  {
+   "name": "Anthony García",
+   "league": "lbprc",
+   "line": "10-for-20 · HR"
+  },
+  {
+   "name": "Conner Greene",
+   "league": "atlantic",
+   "line": "18.1 IP · 16 K · 0.49 ERA"
+  }
+ ]
+}
