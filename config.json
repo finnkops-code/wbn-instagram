@@ -1,7 +1,7 @@
 {
   "site_url": "https://worldbaseballnews.org/",
   "timezone": "Europe/Amsterdam",
-  "max_posts_per_day": 5,
+  "max_posts_per_day": 3,
   "min_minutes_between_posts": 60,
   "max_article_age_hours": 72,
   "title_max_chars": 70,
@@ -132,7 +132,7 @@
     "swiss-national-league-a": "SWISS NLA",
     "swiss-nla": "SWISS NLA"
   },
-  "must_post_score": 60,
+  "must_post_score": 70,
   "scoring": {
     "topics": {
       "title won": {
@@ -216,7 +216,7 @@
   "reserve_last_slot_until": "00:00",
   "breaking_score": 80,
   "post_to_facebook": true,
-  "min_posts_per_day": 5,
+  "min_posts_per_day": 3,
   "fallback_article_age_hours": 72,
   "prime_time_bonus": 8,
   "local_active": [
@@ -287,7 +287,7 @@
   "window_late_minutes": 90,
   "tag_players": false,
   "tag_min_followers": 20000,
-  "hard_max_posts_per_day": 8,
+  "hard_max_posts_per_day": 3,
   "standings": {
     "post_weekday": 0,
     "post_after": "17:00",

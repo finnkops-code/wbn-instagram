@@ -244,7 +244,8 @@ def score(c: dict, posted_today: list[dict], popular: set[str], recent: list[dic
 def posted_today(state: dict) -> list[dict]:
     today = datetime.now(TZ).date()
     return [p for p in state["posted"] if p.get("posted_at") and not p.get("seeded")
-            and p.get("slot") != "standings"  # weekly standings carousel doesn't count toward the 5 news posts
+            and p.get("slot") != "standings"  # weekly standings carousel doesn't count toward the article posts
+            and str(p.get("url", "")).startswith("http")  # nor do custom posts (Player of the Week, one-offs)
             and datetime.fromisoformat(p["posted_at"]).astimezone(TZ).date() == today]
 
 
