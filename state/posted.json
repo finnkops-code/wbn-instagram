@@ -1192,6 +1192,19 @@
       "tags": null,
       "collaborators": null,
       "posted_at": "2026-11-23T08:37:13+01:00"
+    },
+    {
+      "url": "standings:2026-11-23",
+      "headline": "Weekly standings Nov 23, 2026: LIDOM, LMP, LVBP, LBPRC, ABL",
+      "slot": "standings",
+      "image": "posts/standings-2026-11-23-1.jpg",
+      "media_id": "18150106633576975",
+      "facebook_post_id": "924847174034802_122151246225132879",
+      "tags": null,
+      "collaborators": [
+        "worldbaseballhq"
+      ],
+      "posted_at": "2026-11-23T17:39:24+01:00"
     }
   ]
 }
